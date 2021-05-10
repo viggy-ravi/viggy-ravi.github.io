@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Vignesh Ravindranath" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 2: Covid Outcome Prediction</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/post/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project/project2/">Project 2: Covid Outcome Prediction</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         May 7, 2021 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="introduction" class="section level2">
+<h2>0.0 Introduction</h2>
+<p>For this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on <a href="https://www.kaggle.com/tanmoyx/covid19-patient-precondition-dataset">this kaggle challenge</a>). The dataset contains information on <strong>566,602 patients for 23 different attributes</strong>. Before you get into the data, just know that the <strong>bolded items</strong> are the attributes that <strong>remain</strong> in my dataset for analysis after cleaning. Also, the original dataset uses <code>1's</code> for yes, <code>2's</code> for no, and (<code>97</code>,<code>98</code>,<code>99</code>, or <code>9999-99-99</code>) for <code>NA</code>.</p>
+<ol style="list-style-type: decimal">
+<li><p><code>id</code> - unique number for patients</p></li>
+<li><p><strong><code>sex</code></strong> - F/M (1/2)</p></li>
+<li><p><strong><code>patient_type</code></strong> - not hospitalized/hospitalized (1/2)</p></li>
+<li><p><strong><code>entry_date</code></strong> - date when patient entered hospital</p></li>
+<li><p><strong><code>date_symptoms</code></strong> - date when patient started showing symptoms</p></li>
+<li><p><strong><code>date_died</code></strong> - date patient died (9999-99-99 means recovered)</p></li>
+<li><p><code>intubed</code> - if patient needs ventilator</p></li>
+<li><p><strong><code>pneumonia</code></strong> - if patient has pneumonia</p></li>
+<li><p><strong><code>age</code></strong> - age of patient</p></li>
+<li><p><code>pregnancy</code> - if patient is pregnant</p></li>
+<li><p><strong><code>diabetes</code></strong> - if patient has diabetes</p></li>
+<li><p><code>copd</code> - if patient has Chronic Obstructive Pulmonary Disease (COPD)</p></li>
+<li><p><code>asthma</code> - if patient has asthma</p></li>
+<li><p><code>inmsupr</code> - if patient is immunosuppressed</p></li>
+<li><p><strong><code>hypertension</code></strong> - if patient has hypertension</p></li>
+<li><p><code>other_disease</code> - if patient has another disease</p></li>
+<li><p><code>cardiovascular</code> - if patient had a history of a heart related disease</p></li>
+<li><p><strong><code>obesity</code></strong> - if patient is obese</p></li>
+<li><p><code>renal_chronic</code> - if patient has chronic renal disease</p></li>
+<li><p><code>tobacco</code> - if patient uses tobacco products</p></li>
+<li><p><code>contact_other_covid</code> - if patient came in contact with someone else with covid</p></li>
+<li><p><code>icu</code> - if patient was admitted to the ICU</p></li>
+<li><p><strong><code>covid_res</code></strong> - if patient has resistance - tested positive (1), negative (2), or is waiting for results (3)</p></li>
+</ol>
+<p>Again, I will only be analyzing the <strong>bolded attributes</strong> as the others either have a lot of <code>NA's</code> or <code>2's</code> (no). They don’t have sufficient information to be analyzed. The cleaned data can be found on my <a href="https://github.com/viggy-ravi/covid_outcome_predictions">github repository</a> repository. I will tidy the data in section <code>0.2</code> and begin analysis from section <code>1.0</code>.</p>
+<div id="imports" class="section level3">
+<h3>0.1 Imports</h3>
+<pre class="r"><code>library(tidyverse)
+
+# import dataset (locally - file too large to fit on github)
+covid &lt;- read.csv(&quot;covid.csv&quot;)
+covid %&gt;% head(3)</code></pre>
+<pre><code>##       id sex patient_type entry_date date_symptoms  date_died intubed pneumonia
+## 1 16169f   2            1 04-05-2020    02-05-2020 9999-99-99      97         2
+## 2 1009bf   2            1 19-03-2020    17-03-2020 9999-99-99      97         2
+## 3 167386   1            2 06-04-2020    01-04-2020 9999-99-99       2         2
+##   age pregnancy diabetes copd asthma inmsupr hypertension other_disease
+## 1  27        97        2    2      2       2            2             2
+## 2  24        97        2    2      2       2            2             2
+## 3  54         2        2    2      2       2            2             2
+##   cardiovascular obesity renal_chronic tobacco contact_other_covid covid_res
+## 1              2       2             2       2                   2         1
+## 2              2       2             2       2                  99         1
+## 3              2       1             2       2                  99         1
+##   icu
+## 1  97
+## 2  97
+## 3   2</code></pre>
+<pre class="r"><code>## remove id column
+covid &lt;- covid %&gt;% select(-id)
+
+# get number of rows
+dim(covid)</code></pre>
+<pre><code>## [1] 566602     22</code></pre>
+</div>
+<div id="tidying" class="section level3">
+<h3>0.2 Tidying</h3>
+<div id="remove-nas" class="section level4">
+<h4>0.2.1 Remove NAs</h4>
+<p>As mentioned above, the data provided uses <code>97</code>, <code>98</code>, and <code>99</code> to represent <code>NA</code> values. So the first step is to remove all occurrences of these numbers. I first remove columns that contain approximately &gt;50% <code>NA</code> values (approximately &gt;250,000 values), since they will mostly be removed anyways.</p>
+<pre class="r"><code># step 1: remove all NA values (97, 98, 99)
+
+## count NA-numbers (97, 98, 99) in dataset
+count_na_nums &lt;- function(x)sum(x==97 | x==98 | x==99)
+covid %&gt;% summarize_all(count_na_nums)</code></pre>
+<pre><code>##   sex patient_type entry_date date_symptoms date_died intubed pneumonia age
+## 1   0            0          0             0         0  444813        11 207
+##   pregnancy diabetes copd asthma inmsupr hypertension other_disease
+## 1    288699     1981 1749   1752    1980         1824          2598
+##   cardiovascular obesity renal_chronic tobacco contact_other_covid covid_res
+## 1           1822    1781          1792    1907              175031         0
+##      icu
+## 1 444814</code></pre>
+<pre class="r"><code>## remove features with lots of NA-numbers
+covid &lt;- covid %&gt;%
+  select(-intubed, 
+         -pregnancy,
+         -contact_other_covid, 
+         -icu)</code></pre>
+<p>I found that columns <code>intubed</code>, <code>pregnancy</code>, <code>contact_other_covid</code>, and <code>icu</code> have &gt;50% <code>NA</code> values, so they are removed. Next, I will convert the all occurrences of <code>97-99</code> to <code>NA_integer_</code> and then remove them using <code>na.omit()</code>.</p>
+<pre class="r"><code>## convert NA-numbers to NA
+
+## mutate if condition
+has_na_num &lt;-function(x)any(x==97 | x==98 | x==99)
+
+## mutate if function (NA_integer_ to ensure T/F are of same type)
+replace_num_na &lt;- function(x)if_else((x==97 | x==98 | x==99), NA_integer_, x)
+
+## replace values and remove
+covid &lt;- covid %&gt;% 
+  mutate_if(has_na_num, replace_num_na) %&gt;% 
+  na.omit()
+
+## check for NA
+covid %&gt;% summarise_all( funs(sum(is.na(.))) )</code></pre>
+<pre><code>##   sex patient_type entry_date date_symptoms date_died pneumonia age diabetes
+## 1   0            0          0             0         0         0   0        0
+##   copd asthma inmsupr hypertension other_disease cardiovascular obesity
+## 1    0      0       0            0             0              0       0
+##   renal_chronic tobacco covid_res
+## 1             0       0         0</code></pre>
+<pre class="r"><code>## see how mach data was lost
+dim(covid)</code></pre>
+<pre><code>## [1] 562444     18</code></pre>
+</div>
+<div id="create-new-attributes" class="section level4">
+<h4>0.2.2 Create New Attributes</h4>
+<p>Since dates are difficult to analyze, I will create a new attribute <code>incub_time</code>, which is the time between a patient first notices symptoms (<code>date_symptoms</code>) and the date they checked into the hospital (<code>entry_date</code>).</p>
+<pre class="r"><code># Step 2: create new numeric column for incubation time
+
+# incub time = (hospital) entry date - symptom date
+covid &lt;- covid %&gt;% 
+  mutate(incub_time = as.numeric(as.Date(entry_date, format=&quot;%d-%m-%Y&quot;) - 
+           as.Date(date_symptoms, format=&quot;%d-%m-%Y&quot;)) )
+
+# check if worked
+covid %&gt;% select(entry_date, date_symptoms, incub_time) %&gt;% head()</code></pre>
+<pre><code>##   entry_date date_symptoms incub_time
+## 1 04-05-2020    02-05-2020          2
+## 2 19-03-2020    17-03-2020          2
+## 3 06-04-2020    01-04-2020          5
+## 4 17-04-2020    10-04-2020          7
+## 5 13-04-2020    13-04-2020          0
+## 6 16-04-2020    16-04-2020          0</code></pre>
+<pre class="r"><code># remove redundant columns
+covid &lt;- covid %&gt;% select(-entry_date, -date_symptoms)</code></pre>
+<p>I will also convert ages into the standard age ranges (<code>&lt;18</code>, <code>18-29</code>, <code>30-39</code>, <code>40-49</code>, <code>50-64</code>, <code>65-74</code>, and <code>&gt;75</code>) to make future analysis easier and more meaningful. This data will become <strong>categorical</strong> with <strong>7 categories</strong>.</p>
+<pre class="r"><code># first make cut off ranges (case_when didn&#39;t work directly)
+covid$age_cat &lt;- cut(covid$age, breaks=c(0,18,30,40,50,65,75), right = FALSE)
+covid$age_cat &lt;- as.character(covid$age_cat)
+
+# convert to more readable form
+covid &lt;- covid %&gt;% mutate(age_range = case_when(
+  age_cat == &quot;[0,18)&quot;  ~ &quot;&lt;18&quot;,
+  age_cat == &quot;[18,30)&quot; ~ &quot;18-29&quot;,
+  age_cat == &quot;[30,40)&quot; ~ &quot;30-39&quot;,
+  age_cat == &quot;[40,50)&quot; ~ &quot;40-49&quot;,
+  age_cat == &quot;[50,65)&quot; ~ &quot;50-64&quot;,
+  age_cat == &quot;[65,75)&quot; ~ &quot;65-74&quot;,
+  TRUE ~ &quot;&gt;75&quot;
+))
+
+# drop intermediate column
+covid &lt;- covid %&gt;% select(-age_cat)
+
+# view
+covid %&gt;% select(age, age_range) %&gt;% head()</code></pre>
+<pre><code>##   age age_range
+## 1  27     18-29
+## 2  24     18-29
+## 3  54     50-64
+## 4  30     30-39
+## 5  60     50-64
+## 6  47     40-49</code></pre>
+</div>
+<div id="convert-to-binary" class="section level4">
+<h4>0.2.3 Convert to Binary</h4>
+<p>Next, I will convert the columns into their binary representations (0/1’s). Currently, they are entered as <code>1's</code> for <code>True</code>/<code>female</code> and <code>2's</code> for <code>False</code>/<code>male</code>. For example, for the columns <code>diabetes</code>, a <code>1</code> indicates that the patient has diabetes (True) and <code>2</code> indicates that the patient doesn’t have diabetes (False). This is true for all columns except for <code>hospitalized</code>, where the relationship is flipped for some reason. I will also convert the <code>date_died</code> to binary, where <code>0</code> is if the patient recovered (represented as <code>9999-99-99</code>) and <code>1</code> is if the patient died (represented as an actual date). Lastly, I will convert the column <code>covid_res</code> to categorical data - <code>positive</code>, <code>negative</code>, <code>waiting</code> - for the values <code>1</code>, <code>2</code>, and <code>3</code> respectively, and rename the column to <code>covid_test</code>.</p>
+<pre class="r"><code># step 3: convert to binary
+
+## define functions
+## 9999-99-99 = recovered (or 0); actual date == died (or 1)
+change_date_to_binary &lt;- function(x)if_else(x==&#39;9999-99-99&#39;,0,1)
+
+## 0 == F/Male; 1 == T/Female
+# abs(2-2) = 0 (F/Male)
+# abs(1-2) = 1 (T/Female)
+change_nmbr_to_binary &lt;- function(x)if_else(x&lt;=2, abs(x-2), as.double(x))
+
+## mutate
+covid &lt;- covid %&gt;% 
+  # create covid_test categorical data
+  mutate(covid_test = case_when(
+    covid_res == 1 ~ &quot;positive&quot;,
+    covid_res == 2 ~ &quot;negative&quot;,
+    covid_res == 3 ~ &quot;waiting&quot;)) %&gt;%
+  # convert `date_died` column to 0/1
+  mutate_at(vars(date_died), change_date_to_binary) %&gt;%
+  mutate_at(vars(date_died), change_nmbr_to_binary) %&gt;%
+  # convert numeric columns to 0/1
+  mutate_if(is.numeric, change_nmbr_to_binary) %&gt;%
+  # convert `sex` to M/F (0/1)
+  mutate(sex = ifelse(sex == 0,&#39;M&#39;,&#39;F&#39;)) %&gt;%
+  # switch 1/0 to 0/1 (not hospitalized/hospitalized) for `patient_type`
+  mutate(hospitalized = ifelse(patient_type == 1,0,1)) %&gt;%
+  # rename columns
+  rename(died = date_died) %&gt;%
+  # remove redundant column
+  select(-patient_type, -covid_res)
+
+# all clean up is done!
+covid %&gt;% head(3)</code></pre>
+<pre><code>##   sex died pneumonia age diabetes copd asthma inmsupr hypertension
+## 1   M    0         0  27        0    0      0       0            0
+## 2   M    0         0  24        0    0      0       0            0
+## 3   F    0         0  54        0    0      0       0            0
+##   other_disease cardiovascular obesity renal_chronic tobacco incub_time
+## 1             0              0       0             0       0          0
+## 2             0              0       0             0       0          0
+## 3             0              0       1             0       0          5
+##   age_range covid_test hospitalized
+## 1     18-29   positive            0
+## 2     18-29   positive            0
+## 3     50-64   positive            1</code></pre>
+</div>
+<div id="remove-attributes" class="section level4">
+<h4>0.2.4 Remove Attributes</h4>
+<p>For the last step, I will remove features that don’t have a large presence in the dataset. The dataset is very large and computation in the future sometimes doesn’t work on a local machine, so I will go ahead and prune the dataset now. I only remove features that have a mean of less that 10% (most columns are binary so the mean corresponds to the proportion of <code>1's</code>). The 10% value was chosen arbitrarily.</p>
+<pre class="r"><code># summarize all numeric columns (these are between 0 and 1)
+colMeans(covid %&gt;% dplyr::select(where(is.numeric)))</code></pre>
+<pre><code>##           died      pneumonia            age       diabetes           copd 
+##     0.06319029     0.15429447    42.56990918     0.12497778     0.01600515 
+##         asthma        inmsupr   hypertension  other_disease cardiovascular 
+##     0.03189829     0.01579002     0.16327137     0.03012744     0.02242890 
+##        obesity  renal_chronic        tobacco     incub_time   hospitalized 
+##     0.16287488     0.01981886     0.08485111     3.70852209     0.21370661</code></pre>
+<p>So, we see that <code>copd</code>, <code>asthma</code>, <code>inmsupr</code>, <code>other_disease</code>, <code>cardiovascular</code>, <code>renal_chronic</code>, and <code>tobacco</code> have means less than 0.10, so they will be removed. I will leave the column <code>died</code> as it will be a useful target variable.</p>
+<pre class="r"><code>covid &lt;- covid %&gt;% select(-copd,
+                          -asthma,
+                          -inmsupr,
+                          -other_disease,
+                          -cardiovascular,
+                          -renal_chronic,
+                          -tobacco)
+dim(covid)</code></pre>
+<pre><code>## [1] 562444     11</code></pre>
+<p>Great! Now the data should be all cleaned up. Since there was a lot that changed, here is a new list of all attributes that are in the cleaned dataset. Most features should be binary (0/1), numeric, or character values.</p>
+<ol style="list-style-type: decimal">
+<li><p><code>sex</code> - M/F</p></li>
+<li><p><code>died</code> - if patient recovered/died (0/1)</p></li>
+<li><p><code>pneumonia</code> - if patient does not have pneumonia/has pneumonia (0/1)</p></li>
+<li><p><code>age</code> - numerical value of patient’s age</p></li>
+<li><p><code>diabetes</code> - if patient does not have diabetes/has diabetes (0/1)</p></li>
+<li><p><code>hypertension</code> - if patient does not have hypertension/has hypertension (0/1)</p></li>
+<li><p><code>obesity</code> - if patient does not have obesity/has obesity (0/1)</p></li>
+<li><p><code>incub_time</code> - days between start of symptoms and date checked into hospital</p></li>
+<li><p><code>age_range</code> - categories of age ranges (&lt;18, 18-29, 30-39, 40-49, 50-64, 65-74, &gt;75)</p></li>
+<li><p><code>covid_test</code> - if patient’s covid test came out positive, negative, or is waiting</p></li>
+<li><p><code>hospitalized</code> - if patient was not hospitalized/hospitalized (0/1)</p></li>
+</ol>
+</div>
+<div id="quick-stats" class="section level4">
+<h4>0.2.5 Quick Stats</h4>
+<pre class="r"><code># quick stats on categorical data
+# ratio of M/F
+covid %&gt;% group_by(sex) %&gt;% summarise(n = round(n()/nrow(covid),2))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   sex       n
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 F      0.49
+## 2 M      0.51</code></pre>
+<pre class="r"><code># covid test
+covid %&gt;% group_by(covid_test) %&gt;% summarise(n = round(n()/nrow(covid),2))</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   covid_test     n
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 negative    0.49
+## 2 positive    0.39
+## 3 waiting     0.12</code></pre>
+<pre class="r"><code># age ranges
+covid %&gt;% group_by(age_range) %&gt;% summarise(n = round(n()/nrow(covid),2))</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   age_range     n
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 &lt;18        0.04
+## 2 &gt;75        0.04
+## 3 18-29      0.18
+## 4 30-39      0.24
+## 5 40-49      0.22
+## 6 50-64      0.21
+## 7 65-74      0.06</code></pre>
+</div>
+</div>
+</div>
+<div id="analysis-of-variance" class="section level2">
+<h2>1.0 Analysis of Variance</h2>
+<p>The pandemic has disproportionately been affecting the elderly population, due to the physiological changes that come with aging and potential pre-existing health conditions (<a href="https://www.who.int/news-room/feature-stories/detail/who-delivers-advice-and-support-for-older-people-during-covid-19">ref</a>). I would like to explore if the rates of pre-existing conditions do vary among the different age groups (as a check to see how accurate the data holds to the information we’ve heard). This can be examined through a multivariate analysis of variance test or a MANOVA test. I will compare the mean rates of pre-existing conditions - <code>diabetes</code>, <code>hypertension</code>, <code>obesity</code> - among different age groups (<code>age_range</code>).</p>
+<p><span class="math inline">\(H_0:\)</span> For each response variable, the means of all groups are equal (<span class="math inline">\(\mu_1 = \mu_2 = \ldots = \mu_m\)</span>).</p>
+<p><span class="math inline">\(H_A:\)</span> For at least one response variable, at least one group mean differs (<span class="math inline">\(\mu_i \ne \mu_{i&#39;}\)</span>).</p>
+<pre class="r"><code># MANOVA (1)
+man &lt;- manova(cbind(diabetes, hypertension, obesity)~age_range, data=covid)
+
+# summary - statistical significance
+summary(man)</code></pre>
+<pre><code>##               Df  Pillai approx F num Df  den Df    Pr(&gt;F)    
+## age_range      6 0.22251   7509.7     18 1687311 &lt; 2.2e-16 ***
+## Residuals 562437                                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Since the p-value &lt; 0.05, we can reject the null-hypothesis. Now, let’s find out which groups are different from each other for each variable.</p>
+<pre class="r"><code># one way ANOVA (3 tests)
+summary.aov(man)</code></pre>
+<pre><code>##  Response diabetes :
+##                 Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## age_range        6   7481  1246.8   12980 &lt; 2.2e-16 ***
+## Residuals   562437  54027     0.1                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response hypertension :
+##                 Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## age_range        6  12695 2115.87   18553 &lt; 2.2e-16 ***
+## Residuals   562437  64142    0.11                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response obesity :
+##                 Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## age_range        6   1139 189.821  1413.2 &lt; 2.2e-16 ***
+## Residuals   562437  75548   0.134                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># pair-wised t-test (21 tests each)
+pairwise.t.test(covid$diabetes,    covid$age_range, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  covid$diabetes and covid$age_range 
+## 
+##       &lt;18    &gt;75    18-29  30-39  40-49  50-64 
+## &gt;75   &lt;2e-16 -      -      -      -      -     
+## 18-29 0.005  &lt;2e-16 -      -      -      -     
+## 30-39 &lt;2e-16 &lt;2e-16 &lt;2e-16 -      -      -     
+## 40-49 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16 -      -     
+## 50-64 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16 -     
+## 65-74 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16 &lt;2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(covid$hypertension,covid$age_range, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  covid$hypertension and covid$age_range 
+## 
+##       &lt;18     &gt;75     18-29   30-39   40-49   50-64  
+## &gt;75   &lt; 2e-16 -       -       -       -       -      
+## 18-29 7.4e-11 &lt; 2e-16 -       -       -       -      
+## 30-39 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 -       -       -      
+## 40-49 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 -       -      
+## 50-64 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 -      
+## 65-74 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(covid$obesity,     covid$age_range, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  covid$obesity and covid$age_range 
+## 
+##       &lt;18     &gt;75     18-29   30-39   40-49   50-64  
+## &gt;75   &lt; 2e-16 -       -       -       -       -      
+## 18-29 &lt; 2e-16 &lt; 2e-16 -       -       -       -      
+## 30-39 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 -       -       -      
+## 40-49 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 -       -      
+## 50-64 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 1.9e-09 -      
+## 65-74 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 5.6e-06 &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<p>From the one-way ANOVA tests and the individual t-tests, we see that most relations have differences in rates of pre-existing conditions between the various age groups (p &lt; 0.05). However, it was interesting to see that the rates of diabetes between the age groups <code>&lt;18</code> and <code>18-29</code> are closer together than for other groups (p = 0.005); also the rates of obesity between the age group <code>40-49</code> are closer to the age groups <code>50-64</code> and <code>65-74</code> (p=1.9e-9 and p=5.6e-6 respectively), but they are still statistically different.</p>
+<p>That being said, since there were a lot of tests performed, we need to correct the p-value using the Bonferroni adjusted significance.</p>
+<pre class="r"><code># n tests (1 MANOVA, 3 ANOVA, 63 t-tests)
+X &lt;- 1 + 3 + (3*21)
+
+# prob of at least 1 type-I error
+1 - 0.95^X</code></pre>
+<pre><code>## [1] 0.9678277</code></pre>
+<pre class="r"><code># Bonferroni adjusted significance level
+0.05/X</code></pre>
+<pre><code>## [1] 0.0007462687</code></pre>
+<p>The Bonferroni adjusted p-value is <code>0.0007</code>. We see that the previous relation of diabetes between the age groups <code>&lt;18</code> and <code>18-29</code> is no longer significant. In other words, the mean rate of diabetes between the age groups &lt;18 and 18-29 are similar.</p>
+<pre class="r"><code># remove variable to clean environment 
+rm(list= ls()[!(ls() %in% c(&#39;covid&#39;,&#39;class_diag&#39;))])</code></pre>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>2.0 Randomization Test</h2>
+<p>From the MANOVA test we found that different age groups have different rates of pre-existing conditions (mostly). Now I would like to see how pre-existing conditions vary between men and women.</p>
+<p>From some research and exploration of the dataset, I found that men are disproportionately affected by COVID-19 than women (<a href="https://medicine.yale.edu/news-article/the-coronavirus-affects-women-and-men-differently--learning-how-may-help-stop-the-pandemic/">ref</a>). However, I would like to see if there is a significant different in pre-existing condition rates between the men and women who passed away to COVID-19.</p>
+<pre class="r"><code># quick check
+
+# isolate death cases
+covid %&gt;% filter(died == 1) %&gt;%
+  # nrow() = 35541
+  group_by(sex) %&gt;%
+  summarise(death_rate = round(n()/35541, 3))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   sex   death_rate
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 F          0.352
+## 2 M          0.648</code></pre>
+<p>We see that of those who died, 65% were men and 35% were women.</p>
+<div id="define-problem" class="section level3">
+<h3>2.1 Define Problem</h3>
+<p>To test to see if the rates of a pre-existing condition differ between men and women, I will perform a randomized test. First, I will look deeper into the three pre-existing conditions to see if men and women had similar rates for any one condition.</p>
+<pre class="r"><code># filter dataset to only those who passed away
+rnd_data &lt;- covid %&gt;% filter(died == 1)
+
+# true mean pre-existing rates between M/F
+rnd_data %&gt;% group_by(sex) %&gt;%
+  summarise(diabetes_rate = mean(diabetes), 
+            hypert_rate = mean(hypertension),
+            obesity_rate = mean(obesity))</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   sex   diabetes_rate hypert_rate obesity_rate
+##   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+## 1 F             0.420       0.494        0.270
+## 2 M             0.341       0.382        0.215</code></pre>
+<p>Interestingly, among those who passed away, women have higher rates of pre-existing conditions than men, even though men suffer more severe cases and die of COVID-19 than women. That must mean there are other factors that played a role in the outcomes of COVID-19 for men.</p>
+<p>Since the <code>obesity_rate</code>s are closest together, I will perform a randomized test on that pre-existing condition. This will provide us insight on how likely it is that <code>obesity</code> rates differ between the men and women who passed away from COVID-19.</p>
+</div>
+<div id="randomized-test" class="section level3">
+<h3>2.2 Randomized Test</h3>
+<p>For the randomization test, I will shuffle the <code>sex</code> label and calculate the mean differences of obesity rates between the two groups.</p>
+<p><span class="math inline">\(H_0:\)</span> The average obesity rates among the two groups are equal.</p>
+<p><span class="math inline">\(H_A:\)</span> The average obesity rates among the two groups are not equal</p>
+<pre class="r"><code># reduce dataset to important features
+rnd_data &lt;- rnd_data %&gt;% select(sex, obesity)
+
+# test
+set.seed(813)
+
+rand_dist &lt;- vector()
+# there is a lot of data, so I will only do 100 samples
+# though, I get the same results for 100 and 5000 samples
+for(i in 1:100){
+  # sample sex
+  perm &lt;- data.frame(obesity=rnd_data$obesity,
+                     sex=sample(rnd_data$sex))
+  
+  # mean difference
+  rand_dist[i] &lt;- mean(perm[perm$sex==&quot;F&quot;,]$obesity) - 
+                  mean(perm[perm$sex==&quot;M&quot;,]$obesity)
+}
+
+# find true mean ages
+orig_diff &lt;- rnd_data %&gt;% group_by(sex) %&gt;% 
+  summarise(avg = mean(obesity)) %&gt;% 
+  summarise(diff(avg)) %&gt;% pull()
+round(orig_diff, 3)</code></pre>
+<pre><code>## [1] -0.055</code></pre>
+<pre class="r"><code># p-value
+mean(rand_dist &gt; orig_diff | rand_dist &lt; -orig_diff)</code></pre>
+<pre><code>## [1] 1</code></pre>
+</div>
+<div id="null-distribution" class="section level3">
+<h3>2.3 Null Distribution</h3>
+<pre class="r"><code># histogram
+{hist(rand_dist, main=&quot;&quot;,ylab=&quot;&quot;); abline(v = c(-orig_diff,orig_diff),col=&quot;red&quot;)}</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># orig_diff = -/+ 0.055</code></pre>
+<p>From the randomized test, we see that there is no chance that the rates of obesity should vary so much between the men and women who passed away. The true mean difference in obesity rates between men and women is 0.055. However, the entire null distribution falls within -0.055 and +0.055.</p>
+<pre class="r"><code># remove variable to clean environment 
+rm(list= ls()[!(ls() %in% c(&#39;covid&#39;,&#39;class_diag&#39;))])</code></pre>
+</div>
+</div>
+<div id="linear-regression" class="section level2">
+<h2>3.0 Linear Regression</h2>
+<div id="coefficients" class="section level3">
+<h3>3.1 Coefficients</h3>
+<p>Now I will build a linear regression model to predict the probability an individual will be hospitalized based on their sex and if they have any pre-existing conditions.</p>
+<pre class="r"><code>library(lmtest)
+library(sandwich)
+
+# linear regression model
+lm_fit &lt;- lm(hospitalized~sex*diabetes + sex*hypertension + sex*obesity,
+             data=covid)
+summary(lm_fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = hospitalized ~ sex * diabetes + sex * hypertension + 
+##     sex * obesity, data = covid)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.6329 -0.1882 -0.1133 -0.1133  0.8867 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        0.1132635  0.0008629 131.252  &lt; 2e-16 ***
+## sexM               0.0749031  0.0012167  61.562  &lt; 2e-16 ***
+## diabetes           0.2396085  0.0024833  96.489  &lt; 2e-16 ***
+## hypertension       0.1839564  0.0022128  83.134  &lt; 2e-16 ***
+## obesity            0.0137193  0.0020027   6.850 7.38e-12 ***
+## sexM:diabetes      0.0162390  0.0033998   4.776 1.78e-06 ***
+## sexM:hypertension -0.0123776  0.0030590  -4.046 5.21e-05 ***
+## sexM:obesity       0.0035773  0.0028533   1.254     0.21    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3887 on 562436 degrees of freedom
+## Multiple R-squared:  0.1008, Adjusted R-squared:  0.1008 
+## F-statistic:  9005 on 7 and 562436 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The intercept (<code>0.113</code>) indicates the probability of being hospitalized if you are a woman. As expected, men have a higher risk (<code>+0.075</code>) of being hospitalized. In general, all three pre-existing conditions increases an individuals risk of being hospitalized, however, diabetes and hypertension are more of a risk (<code>0.240</code> and <code>0.184</code> respectively) than obesity (<code>0.014</code>). Diabetes and obesity increase the risk of being hospitalized for men specifically (<code>0.016</code> and <code>0.004</code> respectively), however hypertension seems to reduce their risk.</p>
+</div>
+<div id="regression-plot" class="section level3">
+<h3>3.2 Regression Plot</h3>
+<pre class="r"><code>library(gridExtra)
+
+# only plot 25% of data points (to reduce execution time)
+set.seed(813)
+plot_df &lt;- sample_n(covid, 0.25*nrow(covid)) %&gt;% 
+  select(sex, diabetes, hypertension, obesity, hospitalized)
+
+# plot regressions
+p1 &lt;- qplot(diabetes, hospitalized, data=plot_df, color=sex) +
+  geom_point() + geom_smooth(method=&#39;lm&#39;) + 
+  geom_vline(xintercept=mean(covid$diabetes,na.rm=T),lty=2)
+p2 &lt;- qplot(hypertension, hospitalized, data=plot_df, color=sex)+
+  geom_point() + geom_smooth(method=&#39;lm&#39;) + 
+  geom_vline(xintercept=mean(covid$hypertension,na.rm=T),lty=2)
+p3 &lt;- qplot(obesity, hospitalized, data=plot_df, color=sex)+
+  geom_point() + geom_smooth(method=&#39;lm&#39;) + 
+  geom_vline(xintercept=mean(covid$obesity,na.rm=T),lty=2)
+grid.arrange(p1, p2, p3, nrow=3)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># R2
+round(summary(lm_fit)$r.sq, 3)</code></pre>
+<pre><code>## [1] 0.101</code></pre>
+<p>The model explains about 10.1% of the variation in the outcomes.</p>
+</div>
+<div id="check-assumptions" class="section level3">
+<h3>3.3 Check Assumptions</h3>
+<pre class="r"><code># check assumptions of linearity, normality, homoscedasticity
+bptest(lm_fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  lm_fit
+## BP = 26951, df = 7, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code># Corrected SE
+coeftest(lm_fit, vcov=vcovHC(lm_fit))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                      Estimate  Std. Error  t value  Pr(&gt;|t|)    
+## (Intercept)        0.11326353  0.00072028 157.2496 &lt; 2.2e-16 ***
+## sexM               0.07490312  0.00112699  66.4631 &lt; 2.2e-16 ***
+## diabetes           0.23960855  0.00306430  78.1936 &lt; 2.2e-16 ***
+## hypertension       0.18395645  0.00262269  70.1403 &lt; 2.2e-16 ***
+## obesity            0.01371925  0.00203550   6.7400 1.586e-11 ***
+## sexM:diabetes      0.01623897  0.00424710   3.8235 0.0001316 ***
+## sexM:hypertension -0.01237764  0.00371066  -3.3357 0.0008509 ***
+## sexM:obesity       0.00357732  0.00309180   1.1570 0.2472575    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Based on the Breusch-Pagan test, the p-value &lt; 0.05, indicating that we can reject the null hypothesis and that too much of the variance is explained by additional explanatory variables (heteroscedasticity). There are minimal changes in the SE. Some features, like <code>interecept</code> and sexM`, the corrected SE was reduced. For the remaining features, the corrected SE was increased.</p>
+<pre class="r"><code># remove variable to clean environment 
+rm(list= ls()[!(ls() %in% c(&#39;covid&#39;,&#39;class_diag&#39;))])</code></pre>
+</div>
+</div>
+<div id="bootstrapping" class="section level2">
+<h2>4.0 Bootstrapping</h2>
+<p>Now, I will compute the bootstrapped SE for the regression model found in <code>Section 3.0</code>.</p>
+<pre class="r"><code># select important datapoints
+dat &lt;- covid %&gt;% select(sex, diabetes, hypertension, obesity, hospitalized)
+
+# bootstrap SE of slope (re-sampling observations) 
+set.seed(813)
+
+# there is a lot of data, so I will only do 100 samples
+# though, I get the same results for 100 and 5000 samples
+samp_distn &lt;- replicate(100, {
+  boot_dat &lt;- sample_frac(dat, replace=T)
+  fit &lt;- lm(hospitalized~sex*diabetes + sex*hypertension + sex*obesity,
+            data=boot_dat)
+  coef(fit)
+})
+
+# compare the two methods
+samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarise_all(sd)</code></pre>
+<pre><code>##    (Intercept)       sexM    diabetes hypertension     obesity sexM:diabetes
+## 1 0.0008029077 0.00116445 0.002883634  0.002639915 0.002122281   0.003962536
+##   sexM:hypertension sexM:obesity
+## 1       0.004055147  0.002799329</code></pre>
+<p>The all bootstrapped SE except for <code>sexM:obesity</code> are slightly higher than the SE found in <code>Section 3.1</code>. All SE, except for <code>sexM:obesity</code> were statistically significant in <code>Section 3.1</code>, so the respective bootstrapped SE should also be statistically significant.</p>
+<pre class="r"><code># remove variable to clean environment 
+rm(list= ls()[!(ls() %in% c(&#39;covid&#39;,&#39;class_diag&#39;))])</code></pre>
+</div>
+<div id="logistic-regression---subset-of-data" class="section level2">
+<h2>5.0 Logistic Regression - Subset of Data</h2>
+<p>Although the linear regression provided some meaningful feedback from the coefficiets we fitted, a logistic regression would be much more effective for this dataset, since most features are binary. I will re-fit a logistic regression model on the same features from the linear regrssion model.</p>
+<div id="coefficients-1" class="section level3">
+<h3>5.1 Coefficients</h3>
+<pre class="r"><code># logistic regression
+glm_fit &lt;- glm(hospitalized~sex*diabetes + sex*hypertension + sex*obesity,
+               data=covid, family=&quot;binomial&quot;)
+exp(coef(glm_fit))</code></pre>
+<pre><code>##       (Intercept)              sexM          diabetes      hypertension 
+##         0.1315540         1.7798828         3.4450146         2.8544815 
+##           obesity     sexM:diabetes sexM:hypertension      sexM:obesity 
+##         1.1078153         0.9226426         0.7992492         0.9946613</code></pre>
+<p>The coefficients indicate that <code>sexM</code>, <code>diabetes</code>, and <code>hypertension</code> all increase the risk of being hospitalized by a factor of <code>1.77</code>. <code>3.44</code>, and <code>2.85</code> respectively. The features <code>sexM:hypertension</code> reduces the risk of being hospitalized by a factor of <code>0.799</code>. The remaining features don’t seem impact your risk of being hospitalized by the coronavirus (<code>~1</code>).</p>
+</div>
+<div id="confusion-matrix" class="section level3">
+<h3>5.2 Confusion Matrix</h3>
+<p>Let’s see how well the model performed.</p>
+<pre class="r"><code># confusion matrix
+prob &lt;- predict(glm_fit, type=&quot;response&quot;)
+pred &lt;- ifelse(prob&gt;.5,1,0)
+table(truth=covid$died, prediction=pred) %&gt;% addmargins</code></pre>
+<pre><code>##      prediction
+## truth      0      1    Sum
+##   0   497642  29261 526903
+##   1    27380   8161  35541
+##   Sum 525022  37422 562444</code></pre>
+<pre class="r"><code># acc, tpr, tnr, ppv, auc
+class_diag(prob, covid$died)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.8992949 0.2296221 0.9444661 0.2180803 0.7350419</code></pre>
+<p>It looks like the model was about <code>90%</code> accurate in predicting if an individual would be hospitalized by the coronavirus based on inputs like their sex and pre-existing conditions. The AUC is about <code>0.74</code>.</p>
+</div>
+<div id="density-plot" class="section level3">
+<h3>5.3 Density Plot</h3>
+<pre class="r"><code># log-odds
+covid$logit &lt;- predict(glm_fit, type=&quot;link&quot;)
+
+covid %&gt;% ggplot()+
+  geom_density(aes(logit, color=hospitalized, fill=hospitalized), alpha=.4)+
+  theme(legend.position=c(.85,.85))+
+  geom_vline(xintercept=0)+
+  xlab(&quot;logit (log-odds)&quot;)+
+  geom_rug(aes(logit,color=hospitalized))</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The density plot looks a little busy, but that might be due to fact that we fit a logistic regression model on many factors and interactions. There are about 8 pairs of density plots, one for each feature from the model. They can be seen better when we color the density plots by <code>sex</code>.</p>
+<pre class="r"><code>covid %&gt;% ggplot()+
+  geom_density(aes(logit, color=sex, fill=sex), alpha=.4)+
+  theme(legend.position=c(.85,.85))+
+  geom_vline(xintercept=0)+
+  xlab(&quot;logit (log-odds)&quot;)+
+  geom_rug(aes(logit,color=sex))</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="roc-auc-curves" class="section level3">
+<h3>5.4 ROC, AUC Curves</h3>
+<pre class="r"><code>library(plotROC)
+
+# ROC plot
+ROCplot &lt;- ggplot(covid) + geom_roc(aes(d=died, m=prob), n.cuts=0) 
+ROCplot</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># AUC
+calc_auc(ROCplot) %&gt;% select(AUC) %&gt;% pull()</code></pre>
+<pre><code>## [1] 0.7350419</code></pre>
+<p>The area under the curve is about 0.74, meaning that the degree of separability between being hospitalized and not hospitalized is about 74%.</p>
+<pre class="r"><code># remove variable to clean environment 
+rm(list= ls()[!(ls() %in% c(&#39;covid&#39;,&#39;class_diag&#39;))])</code></pre>
+</div>
+</div>
+<div id="logistic-regression---all-of-data" class="section level2">
+<h2>6.0 Logistic Regression - All of Data</h2>
+<p>Now I will perform a logistic regression on all the attributes</p>
+<div id="fit-model" class="section level3">
+<h3>6.1 Fit Model</h3>
+<pre class="r"><code># remove age since it is redundant with age_range
+covid &lt;- covid %&gt;% select(-age, -died)
+
+glm_fit2 &lt;- glm(hospitalized~., data=covid, family=&quot;binomial&quot;)
+exp(coef(glm_fit2))</code></pre>
+<pre><code>##        (Intercept)               sexM          pneumonia           diabetes 
+##          0.3452204          1.1241626         33.0892376          1.1711701 
+##       hypertension            obesity         incub_time       age_range&gt;75 
+##          0.9603159          1.0121086          0.9889418          1.8754025 
+##     age_range18-29     age_range30-39     age_range40-49     age_range50-64 
+##          0.2038129          0.2265116          0.3394530          0.5941156 
+##     age_range65-74 covid_testpositive  covid_testwaiting              logit 
+##          1.2744252          1.7112068          1.4327928          1.5380026</code></pre>
+<pre class="r"><code># predict outcome using fitted model
+prob &lt;- predict(glm_fit2, type=&quot;response&quot;)
+
+# acc, tpr, tnr, ppv, auc
+class_diag(prob, covid$hospitalized)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.8897864 0.6125892 0.9651257 0.8268149 0.8843586</code></pre>
+<p>With all the features, the model has about the same accuracy (<code>0.89</code>) as the previous logistic regression model (<code>0.90</code>). However, the AUC is much higher (<code>0.88</code>) than the previous model’s AUC (<code>0.74</code>).</p>
+</div>
+<div id="fold-cv" class="section level3">
+<h3>6.2 10-Fold CV</h3>
+<pre class="r"><code># k-folds
+set.seed(813)
+k = 10 # number of folds
+
+data&lt;-covid[sample(nrow(covid)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(covid)), breaks=k, labels=F) #create folds
+
+diags&lt;-NULL
+for(i in 1:k){
+  ## Create training and test sets
+  train&lt;-data[folds!=i,]
+  test&lt;-data[folds==i,]
+  
+  truth&lt;-test$hospitalized
+  
+  ## Train model on training set (all but fold i)
+  fit&lt;-glm(hospitalized~.,data=train,family=&quot;binomial&quot;)
+  
+  ## Test model on test set (fold i)
+  probs&lt;-predict(fit, newdata = test,type=&quot;response&quot;)
+  
+  ## Get diagnostics for fold i
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.8898059 0.6126758 0.9651306 0.8268423 0.8843456</code></pre>
+<p>The 10-fold CV on the dataset with all attributes as about the same AUC (<code>0.88</code>) as the previous AUC value. This indicates that the model is not over-fitting.</p>
+</div>
+<div id="lasso" class="section level3">
+<h3>6.3 LASSO</h3>
+<p>Although the model is not over-fitting, I would like to see which features the model deems important. So, I will perform a LASSO regression on the same model.</p>
+<pre class="r"><code># LASSO
+library(glmnet)
+set.seed(813)
+
+# lasso regression
+covid_x &lt;- model.matrix(hospitalized~., data= covid)[,-1]
+covid_y &lt;- as.matrix(covid$hospitalized)
+
+## scale x
+covid_x &lt;- scale(covid_x)
+
+# remove dataset - so lasso can fit in memory
+rm(covid)
+
+## lasso
+cv.lasso1 &lt;- cv.glmnet(x=covid_x, y=covid_y, family=&quot;binomial&quot;)
+lasso1 &lt;- glmnet(x=covid_x, y=covid_y, family=&quot;binomial&quot;, alpha=1,
+                 lambda=cv.lasso1$lambda.1se)
+coef(lasso1)</code></pre>
+<pre><code>## 16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                             s0
+## (Intercept)        -1.77229732
+## sexM                0.05245697
+## pneumonia           1.24487665
+## diabetes            0.05195450
+## hypertension        .         
+## obesity             .         
+## incub_time         -0.01894819
+## age_range&gt;75        0.18243150
+## age_range18-29     -0.45409861
+## age_range30-39     -0.47208513
+## age_range40-49     -0.29058618
+## age_range50-64     -0.06006259
+## age_range65-74      0.13537974
+## covid_testpositive  0.22887987
+## covid_testwaiting   0.08795848
+## logit               0.26732409</code></pre>
+<p>The LASSO indicates that only <code>obesity</code> does not help with improving the model’s predictions.</p>
+</div>
+<div id="fold-cv-on-lasso-selected-featuers" class="section level3">
+<h3>6.4 10-Fold CV on LASSO Selected Featuers</h3>
+<pre class="r"><code># re-read covid data
+covid &lt;- read.csv(&quot;covid_sm.csv&quot;)
+
+# remove feature with LASSO of 0
+lasso_dat &lt;- covid %&gt;% select(-obesity)
+
+# redo 10-fold CV with new dataset
+set.seed(813)
+k=10
+
+data1&lt;-lasso_dat[sample(nrow(lasso_dat)),] #put dataset in random order
+folds&lt;-cut(seq(1:nrow(lasso_dat)),breaks=k,labels=F) #create folds
+
+diags&lt;-NULL
+for(i in 1:k){    
+  # train and test datasets
+  train&lt;-data1[folds!=i,] 
+  test&lt;-data1[folds==i,]
+  
+  truth&lt;-test$hospitalized
+  
+  ## Train model on training set (all but fold i)
+  fit&lt;-glm(hospitalized~., data=train,family=&quot;binomial&quot;)
+  
+  ## Test model on test set (fold i)
+  probs&lt;-predict(fit, newdata = test,type=&quot;response&quot;)
+  
+  ## Get diagnostics for fold i
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+# average the diagnostics for all k-folds
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec      ppv       auc
+## 1 0.8996167 0.6547846 0.9661594 0.840225 0.8927561</code></pre>
+<p>Lastly, the final 10-fold CV after LASSO has the same (but slightly better) AUC of 0.89. Again, this indicates that the model did not over-fit.</p>
+<pre><code>## R version 4.0.3 (2020-10-10)
+## Platform: i386-w64-mingw32/i386 (32-bit)
+## Running under: Windows 10 x64 (build 19041)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] glmnet_4.1-1    Matrix_1.2-18   plotROC_2.2.1   gridExtra_2.3  
+##  [5] sandwich_3.0-0  lmtest_0.9-38   zoo_1.8-9       forcats_0.5.1  
+##  [9] stringr_1.4.0   dplyr_1.0.5     purrr_0.3.4     readr_1.4.0    
+## [13] tidyr_1.1.3     tibble_3.1.1    ggplot2_3.3.3   tidyverse_1.3.1
+## 
+## loaded via a namespace (and not attached):
+##  [1] httr_1.4.2        sass_0.3.1        jsonlite_1.7.2    splines_4.0.3    
+##  [5] foreach_1.5.1     modelr_0.1.8      bslib_0.2.4       assertthat_0.2.1 
+##  [9] highr_0.9         cellranger_1.1.0  yaml_2.2.1        pillar_1.6.0     
+## [13] backports_1.2.1   lattice_0.20-44   glue_1.4.2        digest_0.6.27    
+## [17] rvest_1.0.0       colorspace_2.0-1  htmltools_0.5.1.1 plyr_1.8.6       
+## [21] pkgconfig_2.0.3   broom_0.7.6       haven_2.4.1       bookdown_0.22    
+## [25] scales_1.1.1      mgcv_1.8-35       generics_0.1.0    farver_2.1.0     
+## [29] ellipsis_0.3.2    withr_2.4.2       cli_2.5.0         survival_3.2-11  
+## [33] magrittr_2.0.1    crayon_1.4.1      readxl_1.3.1      evaluate_0.14    
+## [37] ps_1.6.0          fs_1.5.0          fansi_0.4.2       nlme_3.1-152     
+## [41] xml2_1.3.2        blogdown_0.20     tools_4.0.3       hms_1.0.0        
+## [45] lifecycle_1.0.0   munsell_0.5.0     reprex_2.0.0      compiler_4.0.3   
+## [49] jquerylib_0.1.4   rlang_0.4.10      grid_4.0.3        iterators_1.0.13 
+## [53] rstudioapi_0.13   labeling_0.4.2    rmarkdown_2.8     codetools_0.2-18 
+## [57] gtable_0.3.0      DBI_1.1.1         R6_2.5.0          lubridate_1.7.10 
+## [61] knitr_1.33        utf8_1.2.1        shape_1.4.5       stringi_1.5.3    
+## [65] Rcpp_1.0.5        vctrs_0.3.8       dbplyr_2.1.1      tidyselect_1.1.1 
+## [69] xfun_0.22</code></pre>
+<pre><code>## [1] &quot;2021-05-10 02:44:04 CDT&quot;</code></pre>
+<pre><code>##        sysname        release        version       nodename        machine 
+##      &quot;Windows&quot;       &quot;10 x64&quot;  &quot;build 19041&quot;        &quot;VIGGY&quot;          &quot;x86&quot; 
+##          login           user effective_user 
+##        &quot;viggy&quot;        &quot;viggy&quot;        &quot;viggy&quot;</code></pre>
+</div>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

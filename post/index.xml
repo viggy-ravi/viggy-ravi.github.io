@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Chris Turner</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on Chris Turner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Best of Both Worlds: Reticulate for R and Python</title>
+      <link>/post/2021/05/09/best-of-both-worlds-reticulate-for-r-and-python/</link>
+      <pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/05/09/best-of-both-worlds-reticulate-for-r-and-python/</guid>
+      <description>Are All Programming Languages Equal?After programming with R for about a semester, I found it exponentially difficult to do exploratory data analysis in Python - a language I’ve been using for years now. R is a great programming language to perform many statistical tests; moreover, the simplicity of tidyverse makes it so easy to do exploratory data analysis. Also, there’s piping - I’m not sure who thought of that, but its my favorite programming tool I’ve learned so far!</description>
+    </item>
+    
+  </channel>
+</rss>

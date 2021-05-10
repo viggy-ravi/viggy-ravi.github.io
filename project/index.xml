@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Chris Turner</title>
+    <link>/project/</link>
+    <description>Recent content in Projects on Chris Turner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Fri, 07 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Project 2: Covid Outcome Prediction</title>
+      <link>/project/project2/</link>
+      <pubDate>Fri, 07 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>0.0 IntroductionFor this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on this kaggle challenge). The dataset contains information on 566,602 patients for 23 different attributes. Before you get into the data, just know that the bolded items are the attributes that remain in my dataset for analysis after cleaning. Also, the original dataset uses 1&#39;s for yes, 2&#39;s for no, and (97,98,99, or 9999-99-99) for NA.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Tidying Up Plastic</title>
+      <link>/project/project1/</link>
+      <pubDate>Tue, 06 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>0.0 IntroductionNo one can go a day without using plastic. It has become an essential item in many of the products we buy or use regularly, furniture to clothing to electronics. Because plastic is so ubiquitous, it becomes easy at times to forget about the impact it has on the environment. Through this project, I hope to learn about the different types of plastic (I keep forgetting what all the recycling numbers mean) and their main producers.</description>
+    </item>
+    
+  </channel>
+</rss>

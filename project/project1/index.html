@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Vignesh Ravindranath" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1: Tidying Up Plastic</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/post/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project/project1/">Project 1: Tidying Up Plastic</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         April 6, 2021 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<div id="introduction" class="section level2">
+<h2>0.0 Introduction</h2>
+<p>No one can go a day without using plastic. It has become an essential item in many of the products we buy or use regularly, furniture to clothing to electronics. Because plastic is so ubiquitous, it becomes easy at times to forget about the impact it has on the environment. Through this project, I hope to learn about the different types of plastic (I keep forgetting what all the recycling numbers mean) and their main producers. That way I can do my part to recycle correctly and avoid plastics that have the largest impact on the environment. I also hope to learn how external factors play a role in a country’s plastic waste production.</p>
+<div id="imports" class="section level3">
+<h3>0.1 Imports</h3>
+<p>I will be using three datasets for this report: <code>plastics</code>, <code>plaEcon</code>, and <code>gdp</code>.</p>
+<p>The <code>plastics</code> dataset was imported from <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-01-26/readme.md"><code>tidytuesdayR</code></a> and contains information of plastic waste collected by country for several households. The plastic waste is sorted by recycling codes and labeled with the parent company that produced the plastic. <code>tidytuesdayR</code> must be installed to import the dataset (see code below). The seven plastic types are listed below in order of their recycling number:</p>
+<ol style="list-style-type: decimal">
+<li><strong>pet</strong> (polyethylene terephthalate)
+<ul>
+<li>used in soft drink bottles, food containers</li>
+</ul></li>
+<li><strong>hdle</strong> (high-density polyethylene)
+<ul>
+<li>used in plastic milk containers, plastic bags, bottle caps, oil cans</li>
+</ul></li>
+<li><strong>pvc</strong> (polyvinyl chloride)
+<ul>
+<li>used in window frames, chemical bottles, pipes</li>
+</ul></li>
+<li><strong>ldpe</strong> (low-density polyethylene)
+<ul>
+<li>used in plastic/Ziploc bags, squeeze bottles</li>
+</ul></li>
+<li><strong>pp</strong> (polypropylene)
+<ul>
+<li>used in flower pots, bumpers, industrial fibers, microwavable food containers</li>
+</ul></li>
+<li><strong>ps</strong> (polystyrene)
+<ul>
+<li>used in toys, video cassettes, beer cups, Styrofoam</li>
+</ul></li>
+<li><strong>o</strong> (other)
+<ul>
+<li>polycarbonate, polyamide, bioplastics</li>
+</ul></li>
+</ol>
+<p>The <code>plaEcon</code> or <code>new-plastics-economy-global commitment</code> dataset was imported from <a href="https://data.world/kgarrett/new-plastics-economy-global-commitment">data.world.com</a> and contains information about various companies and the plastic packaging volume (tons) they produced in the year 2019.</p>
+<p>Lastly, the <code>gdp</code> dataset was imported from <a href="https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?end=2019&amp;start=2019">World Bank</a> and contains the GDP per capita (USD) for all countries between the years 1960 and 2020. However, we will only select the GDP for the year 2019, since the other two datasets are limited to this year.</p>
+<p>The last two datasets (as well as the .Rmd and .R files) can be found on my <a href="https://github.com/viggy-ravi/sds348_project1">Project 1 GitHub</a> folder. Code to import the datasets is below. Just hit run and everything should be fine!</p>
+<pre class="r"><code># uncomment to install these package for project 1
+#install.packages(c(&quot;tidytuesdayR&quot;, &quot;gapminder&quot;, &quot;plotly&quot;))
+
+library(tidyverse)
+library(ggplot2)
+library(plotly)    # used for fancy plots
+library(gapminder) # used for fancy plots
+library(cluster)   # PAM
+
+## plastics
+plastics &lt;- tidytuesdayR::tt_load(&#39;2021-01-26&#39;)$plastics</code></pre>
+<pre><code>## 
+##  Downloading file 1 of 1: `plastics.csv`</code></pre>
+<pre class="r"><code>## Plastic production per volume (tons) for major plastic 
+## producing companies in 2019
+plaEcon &lt;- read.csv(&quot;https://raw.githubusercontent.com/viggy-ravi/sds348_project1/main/data/new-plastics-economy-global%20commitment.csv&quot;,
+                 sep=&quot;,&quot;, na.strings=&quot;NA&quot;, strip.white=T, stringsAsFactors=F)
+
+## Worldbank GDP per Capita 
+gdp &lt;- read.csv(&quot;https://raw.githubusercontent.com/viggy-ravi/sds348_project1/main/data/worldbank_gdp.csv&quot;,
+                sep=&quot;,&quot;, na.strings=&quot;NA&quot;, strip.white=T, stringsAsFactors=F,
+                skip=4)</code></pre>
+</div>
+</div>
+<div id="tidying" class="section level2">
+<h2>1.0 Tidying</h2>
+<div id="exploring-the-data" class="section level3">
+<h3>1.1 Exploring the data</h3>
+<p>Before we jump right in, we first need to explore the data a bit to understand what information is contained in these datasets, if they are missing any values (<code>NA</code> or otherwise), and how we can best join the three datasets together. Let’s start with the <code>plastics</code> dataset.</p>
+<pre class="r"><code># glimpse at plastics
+plastics %&gt;% summary()</code></pre>
+<pre><code>##    country               year      parent_company         empty         
+##  Length:13380       Min.   :2019   Length:13380       Min.   :   0.000  
+##  Class :character   1st Qu.:2019   Class :character   1st Qu.:   0.000  
+##  Mode  :character   Median :2019   Mode  :character   Median :   0.000  
+##                     Mean   :2019                      Mean   :   0.412  
+##                     3rd Qu.:2020                      3rd Qu.:   0.000  
+##                     Max.   :2020                      Max.   :2208.000  
+##                                                       NA&#39;s   :3243      
+##       hdpe               ldpe                o                  pet          
+##  Min.   :   0.000   Min.   :    0.00   Min.   :     0.00   Min.   :    0.00  
+##  1st Qu.:   0.000   1st Qu.:    0.00   1st Qu.:     0.00   1st Qu.:    0.00  
+##  Median :   0.000   Median :    0.00   Median :     0.00   Median :    0.00  
+##  Mean   :   3.046   Mean   :   10.32   Mean   :    49.61   Mean   :   20.94  
+##  3rd Qu.:   0.000   3rd Qu.:    0.00   3rd Qu.:     2.00   3rd Qu.:    0.00  
+##  Max.   :3728.000   Max.   :11700.00   Max.   :120646.00   Max.   :36226.00  
+##  NA&#39;s   :1646       NA&#39;s   :2077       NA&#39;s   :267         NA&#39;s   :214       
+##        pp                 ps                pvc          grand_total       
+##  Min.   :   0.000   Min.   :   0.000   Min.   :  0.00   Min.   :     0.00  
+##  1st Qu.:   0.000   1st Qu.:   0.000   1st Qu.:  0.00   1st Qu.:     1.00  
+##  Median :   0.000   Median :   0.000   Median :  0.00   Median :     1.00  
+##  Mean   :   8.221   Mean   :   1.862   Mean   :  0.35   Mean   :    90.15  
+##  3rd Qu.:   0.000   3rd Qu.:   0.000   3rd Qu.:  0.00   3rd Qu.:     6.00  
+##  Max.   :6046.000   Max.   :2101.000   Max.   :622.00   Max.   :120646.00  
+##  NA&#39;s   :1496       NA&#39;s   :1972       NA&#39;s   :4328     NA&#39;s   :14         
+##    num_events       volunteers   
+##  Min.   :  1.00   Min.   :    1  
+##  1st Qu.:  4.00   1st Qu.:  114  
+##  Median : 15.00   Median :  400  
+##  Mean   : 33.37   Mean   : 1118  
+##  3rd Qu.: 42.00   3rd Qu.: 1416  
+##  Max.   :145.00   Max.   :31318  
+##                   NA&#39;s   :107</code></pre>
+<pre class="r"><code>plastics %&gt;% select(country) %&gt;% unique() %&gt;% count()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    69</code></pre>
+<p>From the quick summary, we see that there is a total of 13,328 rows that describe the plastic waste for 69 countries. The plastic is sorted into the first seven recycling codes (in numerical order: <code>pet</code>, <code>hdpe</code>, <code>pvc</code>, <code>ldpe</code>, <code>pp</code>, <code>ps</code>, <code>o</code>) and contains some other information about how the plastic was collected. For the purpose of this report, we are mostly interested in the country, parent_company, and the seven recycling codes. Also, based on the summary, we see that there are a lot of missing values that may need to be taken care of later. (This dataset looks like it needs to be pivoted longer!)</p>
+<pre class="r"><code># look at pla_econ
+head(plaEcon)</code></pre>
+<pre><code>##                     company   company_type plastic_packaging_volume_in_tons
+## 1 Colgate-Palmolive Company packaged goods                           287008
+## 2               Danone S.A. packaged goods                           750000
+## 3                    Diageo packaged goods                            40000
+## 4                 Essity AB packaged goods                    not disclosed
+## 5                 H&amp;M Group packaged goods                    not disclosed
+## 6      Henkel AG &amp; Co. KGaA packaged goods                    not disclosed</code></pre>
+<pre class="r"><code>plaEcon %&gt;% summary()</code></pre>
+<pre><code>##    company          company_type       plastic_packaging_volume_in_tons
+##  Length:191         Length:191         Length:191                      
+##  Class :character   Class :character   Class :character                
+##  Mode  :character   Mode  :character   Mode  :character</code></pre>
+<p>The <code>plaEcon</code> dataset is simpler and only contains information about each major company, the amount of plastic packaging it produced in the year 2019, and what the plastic was used for. Note that some of the plastic packaging is <code>not disclosed</code> in this dataset. We might want to change these to <code>NA</code> values so its easier to manipulate later on.</p>
+<pre class="r"><code># glimpse at gdp
+dim(gdp)</code></pre>
+<pre><code>## [1] 264  66</code></pre>
+<pre class="r"><code># columns
+names(gdp)</code></pre>
+<pre><code>##  [1] &quot;Country.Name&quot;   &quot;Country.Code&quot;   &quot;Indicator.Name&quot; &quot;Indicator.Code&quot;
+##  [5] &quot;X1960&quot;          &quot;X1961&quot;          &quot;X1962&quot;          &quot;X1963&quot;         
+##  [9] &quot;X1964&quot;          &quot;X1965&quot;          &quot;X1966&quot;          &quot;X1967&quot;         
+## [13] &quot;X1968&quot;          &quot;X1969&quot;          &quot;X1970&quot;          &quot;X1971&quot;         
+## [17] &quot;X1972&quot;          &quot;X1973&quot;          &quot;X1974&quot;          &quot;X1975&quot;         
+## [21] &quot;X1976&quot;          &quot;X1977&quot;          &quot;X1978&quot;          &quot;X1979&quot;         
+## [25] &quot;X1980&quot;          &quot;X1981&quot;          &quot;X1982&quot;          &quot;X1983&quot;         
+## [29] &quot;X1984&quot;          &quot;X1985&quot;          &quot;X1986&quot;          &quot;X1987&quot;         
+## [33] &quot;X1988&quot;          &quot;X1989&quot;          &quot;X1990&quot;          &quot;X1991&quot;         
+## [37] &quot;X1992&quot;          &quot;X1993&quot;          &quot;X1994&quot;          &quot;X1995&quot;         
+## [41] &quot;X1996&quot;          &quot;X1997&quot;          &quot;X1998&quot;          &quot;X1999&quot;         
+## [45] &quot;X2000&quot;          &quot;X2001&quot;          &quot;X2002&quot;          &quot;X2003&quot;         
+## [49] &quot;X2004&quot;          &quot;X2005&quot;          &quot;X2006&quot;          &quot;X2007&quot;         
+## [53] &quot;X2008&quot;          &quot;X2009&quot;          &quot;X2010&quot;          &quot;X2011&quot;         
+## [57] &quot;X2012&quot;          &quot;X2013&quot;          &quot;X2014&quot;          &quot;X2015&quot;         
+## [61] &quot;X2016&quot;          &quot;X2017&quot;          &quot;X2018&quot;          &quot;X2019&quot;         
+## [65] &quot;X2020&quot;          &quot;X&quot;</code></pre>
+<p>Lastly, the <code>gdp</code> dataset contains information about the GDP for 264 countries from the year 1960 to 2020. We are only interested in the year 2019.</p>
+</div>
+<div id="data-cleaning-and-pivoting" class="section level3">
+<h3>1.2 Data cleaning and pivoting</h3>
+<p>Great! Now we can start reducing out datasets to contain only the necessary columns. I will go ahead and rename some of the column names so they’re easier to call later on. I will also pivot longer the <code>plastics</code> dataset to contain the recycling code (<code>recyc_codes</code>) and its respective count for each (country, parent_company) grouping. I will also convert the <code>not disclosed</code> rows to <code>NA</code> values in the <code>plaEcon</code> dataset and select only the <code>X2019</code> column in the <code>gdp</code> dataset.</p>
+<pre class="r"><code># tidy plastics
+plastics &lt;- plastics %&gt;% 
+  select(-year, -empty, -num_events, -volunteers, -grand_total) %&gt;%
+  # the dataset has additional rows for Grand Total that we can filter out
+  filter(parent_company != &#39;Grand Total&#39;)
+
+tidy_plastic &lt;- plastics %&gt;% 
+  pivot_longer(3:9, names_to=&quot;recyc_codes&quot;, values_to=&quot;count&quot;)
+
+glimpse(tidy_plastic)</code></pre>
+<pre><code>## Rows: 93,296
+## Columns: 4
+## $ country        &lt;chr&gt; &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Ar~
+## $ parent_company &lt;chr&gt; &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Un~
+## $ recyc_codes    &lt;chr&gt; &quot;hdpe&quot;, &quot;ldpe&quot;, &quot;o&quot;, &quot;pet&quot;, &quot;pp&quot;, &quot;ps&quot;, &quot;pvc&quot;, &quot;hdpe&quot;, ~
+## $ count          &lt;dbl&gt; 155, 50, 532, 848, 122, 114, 17, 0, 0, 0, 222, 35, 0, 0~</code></pre>
+<pre class="r"><code>## looks tidy!
+glimpse(tidy_plastic)</code></pre>
+<pre><code>## Rows: 93,296
+## Columns: 4
+## $ country        &lt;chr&gt; &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Ar~
+## $ parent_company &lt;chr&gt; &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Unbranded&quot;, &quot;Un~
+## $ recyc_codes    &lt;chr&gt; &quot;hdpe&quot;, &quot;ldpe&quot;, &quot;o&quot;, &quot;pet&quot;, &quot;pp&quot;, &quot;ps&quot;, &quot;pvc&quot;, &quot;hdpe&quot;, ~
+## $ count          &lt;dbl&gt; 155, 50, 532, 848, 122, 114, 17, 0, 0, 0, 222, 35, 0, 0~</code></pre>
+<pre class="r"><code># tidy pla_econ
+tidy_plaEcon &lt;- plaEcon %&gt;%
+  rename(ppv = plastic_packaging_volume_in_tons) %&gt;%
+  mutate(ppv = na_if(ppv, &quot;not disclosed&quot;))
+
+# tidy gdp
+tidy_gdp &lt;- gdp %&gt;% 
+  select(Country.Name, X2019) %&gt;%
+  rename(gdp2019 = X2019)</code></pre>
+</div>
+<div id="spelling-corrections" class="section level3">
+<h3>1.3 Spelling corrections</h3>
+<p>It looks like a few country names are different between the <code>plastics</code> and <code>gdp</code> datasets. Ideally, we could have converted the country names to ISO country codes, but since there are only a few differences, I will do this manually. (I compared the differences by directly looking at the World Bank website.)</p>
+<pre class="r"><code># find differing countries
+anti_join(tidy_plastic, tidy_gdp, by=c(&quot;country&quot;=&quot;Country.Name&quot;)) %&gt;% 
+  select(country) %&gt;% distinct()</code></pre>
+<pre><code>## # A tibble: 9 x 1
+##   country                                           
+##   &lt;chr&gt;                                             
+## 1 Cote D_ivoire                                     
+## 2 ECUADOR                                           
+## 3 EMPTY                                             
+## 4 Hong Kong                                         
+## 5 NIGERIA                                           
+## 6 Taiwan_ Republic of China (ROC)                   
+## 7 United States of America                          
+## 8 Korea                                             
+## 9 United Kingdom of Great Britain &amp; Northern Ireland</code></pre>
+<pre class="r"><code># This is what I need to change
+
+# Cote D_ivoire                   -&gt; Cote d&#39;Ivoire (not in first join) (ignore)
+# ECUADOR                         -&gt; Ecuador
+# Hong Kong                       -&gt; Hong Kong SAR, China
+# NIGERIA                         -&gt; Nigeria
+# Taiwan_ Republic of China       -&gt; not in World Bank (ignore)
+# United States of America        -&gt; United States
+# Korea                           -&gt; Korea, Rep.
+# United Kingdom of Great Britain -&gt; United Kingdom
+
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;ECUADOR&quot;, &quot;Ecuador&quot;)
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;Hong Kong&quot;, &quot;Hong Kong SAR, China&quot;)
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;NIGERIA&quot;, &quot;Nigeria&quot;)
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;United States of America&quot;, &quot;United States&quot;)
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;Korea&quot;, &quot;Korea, Rep.&quot;)
+tidy_plastic$country &lt;- str_replace_all(tidy_plastic$country, 
+                                        &quot;United Kingdom of Great Britain &amp; Northern Ireland&quot;, 
+                                        &quot;United Kingdom&quot;)
+
+tidy_plastic %&gt;% filter(country %in% c(&quot;Ecuador&quot;,
+                                      &quot;Hong Kong SAR, China&quot;,
+                                      &quot;Nigeria&quot;,
+                                      &quot;United States&quot;,
+                                      &quot;Korea, Rep.&quot;,
+                                      &quot;United Kingdom&quot;)) %&gt;%
+  select(country) %&gt;% distinct()</code></pre>
+<pre><code>## # A tibble: 6 x 1
+##   country             
+##   &lt;chr&gt;               
+## 1 Ecuador             
+## 2 Hong Kong SAR, China
+## 3 Nigeria             
+## 4 United Kingdom      
+## 5 United States       
+## 6 Korea, Rep.</code></pre>
+<p>Wonderful! We can start confidently joining now.</p>
+</div>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>2.0 Joining/Merging</h2>
+<p>Overall, it looks like the <code>plastics</code> and <code>plaEcon</code> datasets can be joined along the <em>parent_company/company</em> columns, and the <code>plastics</code> and <code>gdp</code> datasets can be joined along the <em>country</em> columns.</p>
+<pre class="r"><code># how many unique companies are there
+tidy_plastic %&gt;% select(parent_company) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 10822</code></pre>
+<pre class="r"><code>tidy_plaEcon %&gt;% select(company) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 182</code></pre>
+<pre class="r"><code># inner join on plastics and plaEcon
+temp &lt;- inner_join(tidy_plastic, tidy_plaEcon, by=c(&quot;parent_company&quot;=&quot;company&quot;)) %&gt;% 
+  mutate(count = replace_na(count, 0))
+
+# how many mutual companies
+temp %&gt;% select(parent_company) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code># how many unique countries are there
+temp %&gt;% select(country) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 59</code></pre>
+<pre class="r"><code>tidy_gdp %&gt;% select(Country.Name) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 264</code></pre>
+<pre class="r"><code># inner join on plastics/plaEcon and gdp
+df &lt;- inner_join(temp, tidy_gdp, by=c(&quot;country&quot;=&quot;Country.Name&quot;)) %&gt;%
+  mutate(ppv = as.numeric(ppv)) %&gt;%
+  drop_na() %&gt;%
+  distinct()
+
+# how many mutual countries
+df %&gt;% select(country) %&gt;% unique() %&gt;% count() %&gt;% pull()</code></pre>
+<pre><code>## [1] 58</code></pre>
+<p>Since all datasets contain some valuable information/columns, an <code>inner join</code> is necessary. From the first inner join, we saw that <code>plastics</code> contains a lot more companies (10,822) than the <code>plaEcon</code> dataset (182). So, we will be losing a lot of information from the plastic dataset. This may impact the accuracy of future correlations. After the join, we see that only 14 companies lasted with 1925 data points. Next, from the second inner join, we see that <code>temp</code> contains 59 countries (dropped by 10) and <code>gdp</code> contains 264 countries. The final data frame contains 58 countries, as expected (the EMPTY countries were dropped). I have dropped the rows where <code>ppv</code> has <code>NA</code> values, since we will be needing this column for future analysis. There is also no easy way to estimate these values since they are specific to the company.</p>
+</div>
+<div id="wrangling" class="section level2">
+<h2>3.0 Wrangling</h2>
+<p>Now for the interesting part! There are a few chunks below, so I will list the main ideas of them here, and describe the results at the end of this section.</p>
+<ul>
+<li>Summary of <code>df</code> data frame</li>
+<li>Convert (mutate) recycling codes to their corresponding numbers (1-7)</li>
+<li>Countries with the most/least diversity of plastics (by number of companies) - we will use some of this data in a future plot</li>
+<li>Count number of plastics per recycling code</li>
+<li>Top 5 companies that produce the most plastic packaging per volume</li>
+<li>Plastic count in higher/lower gdp rated countries (median gdp)</li>
+</ul>
+<div id="summary-of-data-frame" class="section level3">
+<h3>3.1 Summary of data frame</h3>
+<pre class="r"><code>## summary 
+df %&gt;% summary()</code></pre>
+<pre><code>##    country          parent_company     recyc_codes            count        
+##  Length:1234        Length:1234        Length:1234        Min.   :   0.00  
+##  Class :character   Class :character   Class :character   1st Qu.:   0.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median :   0.00  
+##                                                           Mean   :  26.95  
+##                                                           3rd Qu.:   2.00  
+##                                                           Max.   :3268.00  
+##  company_type            ppv             gdp2019       
+##  Length:1234        Min.   :  40000   Min.   :  679.3  
+##  Class :character   1st Qu.: 129000   1st Qu.: 3659.0  
+##  Mode  :character   Median : 610000   Median : 9912.3  
+##                     Mean   :1413248   Mean   :21529.4  
+##                     3rd Qu.:3000000   3rd Qu.:33228.2  
+##                     Max.   :3000000   Max.   :81993.7</code></pre>
+</div>
+<div id="mutate" class="section level3">
+<h3>3.2 Mutate</h3>
+<pre class="r"><code>## mutate recycling code to number
+df &lt;- df %&gt;%
+  mutate(recyc_nums = case_when(
+    recyc_codes == &quot;pet&quot;  ~ 1,
+    recyc_codes == &quot;hdpe&quot; ~ 2,
+    recyc_codes == &quot;pvc&quot;  ~ 3,
+    recyc_codes == &quot;ldpe&quot; ~ 4,
+    recyc_codes == &quot;pp&quot;   ~ 5,
+    recyc_codes == &quot;ps&quot;   ~ 6,
+    recyc_codes == &quot;o&quot;    ~ 7
+  )) %&gt;%
+  arrange(country, parent_company, recyc_nums)
+glimpse(df)</code></pre>
+<pre><code>## Rows: 1,234
+## Columns: 8
+## $ country        &lt;chr&gt; &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Argentina&quot;, &quot;Ar~
+## $ parent_company &lt;chr&gt; &quot;Carrefour&quot;, &quot;Carrefour&quot;, &quot;Carrefour&quot;, &quot;Carrefour&quot;, &quot;Ca~
+## $ recyc_codes    &lt;chr&gt; &quot;pet&quot;, &quot;hdpe&quot;, &quot;pvc&quot;, &quot;ldpe&quot;, &quot;pp&quot;, &quot;ps&quot;, &quot;o&quot;, &quot;pet&quot;, &quot;~
+## $ count          &lt;dbl&gt; 0, 0, 0, 2, 2, 0, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 1~
+## $ company_type   &lt;chr&gt; &quot;retail &amp; hospitality&quot;, &quot;retail &amp; hospitality&quot;, &quot;retail~
+## $ ppv            &lt;dbl&gt; 57000, 57000, 57000, 57000, 57000, 57000, 57000, 129000~
+## $ gdp2019        &lt;dbl&gt; 9912.282, 9912.282, 9912.282, 9912.282, 9912.282, 9912.~
+## $ recyc_nums     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 1, 2, 2, 3, 4, 5, 5, 6, 7, 7, 1, 2~</code></pre>
+</div>
+<div id="plastic-diversity" class="section level3">
+<h3>3.3 Plastic diversity</h3>
+<pre class="r"><code># find countries with most diverse plastics
+df_max &lt;- df %&gt;% 
+  select(country, parent_company) %&gt;%
+  group_by(country) %&gt;%
+  summarise(num_companies = n()) %&gt;%
+  slice_max(num_companies, n=5)
+df_max</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   country       num_companies
+##   &lt;chr&gt;                 &lt;int&gt;
+## 1 United States            49
+## 2 Argentina                46
+## 3 Switzerland              42
+## 4 Vietnam                  38
+## 5 India                    36</code></pre>
+<pre class="r"><code># find countries with least diverse plastics
+df_min &lt;- df %&gt;% 
+  select(country, parent_company) %&gt;%
+  group_by(country) %&gt;%
+  summarise(num_companies = n()) %&gt;%
+  slice_min(num_companies, n=5)
+df_min</code></pre>
+<pre><code>## # A tibble: 8 x 2
+##   country     num_companies
+##   &lt;chr&gt;               &lt;int&gt;
+## 1 Benin                   7
+## 2 Cyprus                  7
+## 3 El Salvador             7
+## 4 Romania                 7
+## 5 Rwanda                  7
+## 6 Serbia                  7
+## 7 Singapore               7
+## 8 Togo                    7</code></pre>
+<pre class="r"><code># save the country names for a future plot
+top_countries &lt;- df_max %&gt;% pull(country)
+bot_countries &lt;- df_min %&gt;% pull(country)</code></pre>
+</div>
+<div id="plastic-count" class="section level3">
+<h3>3.4 Plastic count</h3>
+<pre class="r"><code># group_by (recycling code), summarize (count)
+df %&gt;% 
+  group_by(recyc_codes) %&gt;%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %&gt;%
+  arrange(desc(total_count))</code></pre>
+<pre><code>## # A tibble: 7 x 3
+##   recyc_codes total_count number
+##   &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;
+## 1 pet               20186      1
+## 2 o                  4867      7
+## 3 pp                 4506      5
+## 4 hdpe               1858      2
+## 5 ldpe               1704      4
+## 6 pvc                  76      3
+## 7 ps                   54      6</code></pre>
+</div>
+<div id="plastic-producers" class="section level3">
+<h3>3.5 Plastic producers</h3>
+<pre class="r"><code># top 5 companies (ppv)
+df %&gt;% 
+  select(parent_company, ppv) %&gt;%
+  distinct() %&gt;%
+  top_n(5) %&gt;%
+  arrange(desc(ppv))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   parent_company            ppv
+##   &lt;chr&gt;                   &lt;dbl&gt;
+## 1 The Coca-Cola Company 3000000
+## 2 Tetra Pak              721000
+## 3 Unilever               610000
+## 4 Mars, Incorporated     129000
+## 5 SC Johnson              90000</code></pre>
+</div>
+<div id="gdp-analysis-of-plastic-waste" class="section level3">
+<h3>3.6 GDP analysis of plastic waste</h3>
+<pre class="r"><code># filter recyc_codes by median gdp
+med_gdp &lt;- df %&gt;% summarise(median(gdp2019)) %&gt;% pull()
+med_gdp</code></pre>
+<pre><code>## [1] 9912.282</code></pre>
+<pre class="r"><code>df_top_med &lt;- df %&gt;%
+  filter(gdp2019 &gt; med_gdp) %&gt;%
+  group_by(recyc_codes) %&gt;%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %&gt;%
+  arrange(desc(total_count))
+df_top_med</code></pre>
+<pre><code>## # A tibble: 7 x 3
+##   recyc_codes total_count number
+##   &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;
+## 1 pet                2032      1
+## 2 o                  1296      7
+## 3 pp                  348      5
+## 4 ldpe                142      4
+## 5 hdpe                131      2
+## 6 ps                    7      6
+## 7 pvc                   7      3</code></pre>
+<pre class="r"><code>df_top_med %&gt;% summarise(upper_med_plastic_count = sum(total_count)) %&gt;% pull()</code></pre>
+<pre><code>## [1] 3963</code></pre>
+<pre class="r"><code>df_low_med &lt;- df %&gt;%
+  filter(gdp2019 &lt; med_gdp) %&gt;%
+  group_by(recyc_codes) %&gt;%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %&gt;%
+  arrange(desc(total_count))
+df_low_med</code></pre>
+<pre><code>## # A tibble: 7 x 3
+##   recyc_codes total_count number
+##   &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;
+## 1 pet               17895      1
+## 2 pp                 4106      5
+## 3 o                  3547      7
+## 4 hdpe               1716      2
+## 5 ldpe               1559      4
+## 6 pvc                  69      3
+## 7 ps                   47      6</code></pre>
+<pre class="r"><code>df_low_med %&gt;% summarise(lower_med_plastic_count = sum(total_count)) %&gt;% pull()</code></pre>
+<pre><code>## [1] 28939</code></pre>
+<p>The data frame summary indicates that there are 1234 data points (left) and all <code>NA's</code> seem to have filtered out through the joins. The most interesting columns seem to be the <code>ppv</code> and <code>gdp2019</code> purely based on their interquartile range vales. First, I will convert the recycling codes to their corresponding number codes (1-7). Specifically, <code>pet</code>=<code>1</code>, <code>hdpe</code>=<code>2</code>, <code>pvc</code>=<code>3</code>, <code>ldpe</code>=<code>4</code>, <code>pp</code>=<code>5</code>, <code>ps</code>=<code>6</code>, <code>o</code>=<code>7</code>. This will help arrange/sort any future analysis if necessary. From section <code>3.4</code> it looks like <code>pet</code> is the most common plastic found in waste.</p>
+<p>Section <code>3.3</code> shows the plastic diversity of various countries. I measured this by counting the number of distinct parent companies for each country (the parent company refers the the company that produced the plastic that was later found in waste). I was expecting countries with higher GDP in general to have more diverse plastics, while countries with lower GDP to have less diverse plastics. Based on the results, it looks like the United States, Argentina, Switzerland, Vietnam, and India had the most diversity of plastics, while Benin, Cyprus, El Salvador, Romania, Serbia, Singapore, and Togo had the least diversity of plastic. That was an interesting result, as there is a mix of high GDP and low GDP countries in both groups. For example, India has a GDP of ~2100 USD (high diversity) while Singapore has a GDP of 65,000 USD (low diversity). It looks like both GDP and other external factors (like lifestyle and business presence) might play a factor in the diversity of plastics in countries.</p>
+<p>I wanted to delve deeper into how GDP affects plastic waste collected. Section <code>3.6</code> explores the amount of plastic produced by countries with GDP higher and lower than the median GDP ~9,900 USD. From previous studies, its clear that countries with lower GDP typically produce more plastic waste since they have less infrastructure to recycle their waste. This was reflected in the results, as higher GDP countries produced ~4,000 pieces of plastic waste, while lower GDP countries produced ~29,000 pieces of plastic waste!</p>
+</div>
+</div>
+<div id="visualization" class="section level2">
+<h2>4.0 Visualization</h2>
+<div id="correlation-plot" class="section level3">
+<h3>4.1 Correlation plot</h3>
+<p>Based on the analysis done in section <code>3.0</code>, it seemed clear that there is a correlation between GDP and plastic waste. However, the correlation plot below doesn’t seem to reflect that. It looks like the 2019 GDP does not seem to correlate with any individual plastic type (or the total plastic count). This might be due to limited data, both in the <code>plastic</code> dataset and in the <code>gdp</code> dataset. In general, GDP seems to have a slight negative correlation with each plastic (similarly there was a higher negative correlation between GDP and total plastic count). Interestingly, some plastics seem to correlate with each other. Specifically, <code>ps</code> and ‘pet’ have a reasonable structures with <code>hdpe</code> and <code>ldpe</code>.</p>
+<p>To produce this correlation plot, I joined the original <code>plastics</code> dataset with the <code>gdp</code> dataset to see how GDP correlates with each type of plastic.</p>
+<pre class="r"><code>df2 &lt;- inner_join(plastics, tidy_gdp, by=c(&quot;country&quot;=&quot;Country.Name&quot;))
+
+cormat2 &lt;- df2 %&gt;% select(is.numeric) %&gt;% cor(use=&quot;pair&quot;)
+
+tidycor2 &lt;- cormat2 %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;%
+  pivot_longer(-1, names_to=&quot;var2&quot;, values_to=&quot;correlation&quot;)
+
+tidycor2 %&gt;% ggplot(aes(var1, var2, fill=correlation)) + 
+  geom_tile() +
+  scale_fill_gradient2(low=&quot;red&quot;, mid=&quot;white&quot;, high=&quot;blue&quot;) +
+  geom_text(aes(label=round(correlation,2)), color=&quot;black&quot;, size=4) +
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + 
+  coord_fixed()</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="interactive-plot" class="section level3">
+<h3>4.2 Interactive plot</h3>
+<p>The plot below is one of my most favorite plots. The plot below shows the distribution of plastic found in each country by plastic type. The data points are different sizes based on the GDP of the country (larger circle = higher GDP). This is an <strong>interactive map</strong>, where you can <strong>click on the circles in the legend</strong> (right) to remove/add countries from the plot. You can also <strong>double-click on a circle in the legend</strong> to isolate the country on the plot. Moreover, you can <strong>hover over points on the plot</strong> to get more information about the data. I limited the countries to the most and least diverse countries (from section <code>3.3</code>) since plotting all 58 countries was a bit too busy. However, the main idea still stands: in general, countries with larger GDP (larger circles) produce less plastic waste, while countries with lower GDP (smaller circles) produce more plastic waste. Feel free to remove the larger circles from the plot to see all the countries.</p>
+<pre class="r"><code># plot 1: count vs gdp by country
+
+## concatenate top and bottom countries (diversity)
+## top: US, Argentina, Switzerland, Vietnam, India
+## bot: Benin, Cyprus, El Salvador, Romania, Rowanda, Serbia, Singapore, Togo
+filter_countries &lt;- c(top_countries, bot_countries)
+
+## filter out these countries only
+df_filter &lt;- df %&gt;% filter(country %in% filter_countries)
+
+## plot
+p1 &lt;- ggplot(df_filter, aes(recyc_codes, count, size=gdp2019, color=country)) + 
+  geom_point() +
+  labs(title=&quot;Amount of Plastic by Country and GDP (2019)&quot;,
+       x=&quot;Recycling Codes&quot;, y=&quot;Plastic Count&quot;)
+ggplotly(p1)</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"x":[4,1,7,2,5,6,3,4,1,1,7,2,5,5,6,3,3,4,1,7,2,5,6,3,4,4,1,1,7,2,5,5,6,3,3,4,4,1,1,7,2,5,5,6,3,3],"y":[0,0,0,2,2,0,0,1,0,2,0,0,1,0,0,0,1,0,1,0,1,0,0,3,222,32,0,3,0,0,35,7,0,0,2,1,3,1,4,0,0,2,5,0,3,15],"text":["recyc_codes: pet<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pvc<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ldpe<br />count:    2<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    2<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ps<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    2<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pvc<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ldpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ps<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pvc<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ldpe<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ps<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    3<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:  222<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:   32<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    3<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pvc<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ldpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:   35<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    7<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ps<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    2<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pet<br />count:    3<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    1<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: hdpe<br />count:    4<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pvc<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ldpe<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    2<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: pp<br />count:    5<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: ps<br />count:    0<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:    3<br />gdp2019:  9912.2818<br />country: Argentina","recyc_codes: o<br />count:   15<br />gdp2019:  9912.2818<br />country: Argentina"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":10.1474081447155,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"Argentina","legendgroup":"Argentina","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[78,0,0,0,0,0,0],"text":["recyc_codes: pet<br />count:   78<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: hdpe<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: pvc<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: ldpe<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: pp<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: ps<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin","recyc_codes: o<br />count:    0<br />gdp2019:  1219.4327<br />country: Benin"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(225,138,0,1)","opacity":1,"size":5.31973009963686,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(225,138,0,1)"}},"hoveron":"points","name":"Benin","legendgroup":"Benin","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[0,0,0,0,0,0,0],"text":["recyc_codes: pet<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: hdpe<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: pvc<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: ldpe<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: pp<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: ps<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus","recyc_codes: o<br />count:    0<br />gdp2019: 27858.3710<br />country: Cyprus"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(190,156,0,1)","opacity":1,"size":14.7050213192969,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(190,156,0,1)"}},"hoveron":"points","name":"Cyprus","legendgroup":"Cyprus","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[39,0,0,0,108,0,0],"text":["recyc_codes: pet<br />count:   39<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: hdpe<br />count:    0<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: pvc<br />count:    0<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: ldpe<br />count:    0<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: pp<br />count:  108<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: ps<br />count:    0<br />gdp2019:  4187.2500<br />country: El Salvador","recyc_codes: o<br />count:    0<br />gdp2019:  4187.2500<br />country: El Salvador"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(140,171,0,1)","opacity":1,"size":7.70462998509627,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(140,171,0,1)"}},"hoveron":"points","name":"El Salvador","legendgroup":"El Salvador","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,4,1,1,7,7,2,2,5,5,6,3,3,4,4,1,7,2,5,6,3,3,4,4,1,1,7,7,2,2,5,5,6,6,3,3],"y":[0,4,0,1,0,1,28,0,0,5,0,17,25,62,68,0,0,0,0,0,0,25,0,24,0,43,0,15,0,13,0,92,0,2,8,1017],"text":["recyc_codes: pet<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pet<br />count:    4<br />gdp2019:  2099.5990<br />country: India","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: hdpe<br />count:    1<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pvc<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pvc<br />count:    1<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ldpe<br />count:   28<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pp<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pp<br />count:    5<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ps<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count:   17<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count:   25<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pet<br />count:   62<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pet<br />count:   68<br />gdp2019:  2099.5990<br />country: India","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pvc<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pp<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ps<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count:   25<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pet<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pet<br />count:   24<br />gdp2019:  2099.5990<br />country: India","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: hdpe<br />count:   43<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pvc<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pvc<br />count:   15<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ldpe<br />count:   13<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pp<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: pp<br />count:   92<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ps<br />count:    0<br />gdp2019:  2099.5990<br />country: India","recyc_codes: ps<br />count:    2<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count:    8<br />gdp2019:  2099.5990<br />country: India","recyc_codes: o<br />count: 1017<br />gdp2019:  2099.5990<br />country: India"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(36,183,0,1)","opacity":1,"size":6.27708267023673,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(36,183,0,1)"}},"hoveron":"points","name":"India","legendgroup":"India","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[17,0,0,0,0,1,9],"text":["recyc_codes: pet<br />count:   17<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: hdpe<br />count:    0<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: pvc<br />count:    0<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: ldpe<br />count:    0<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: pp<br />count:    0<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: ps<br />count:    1<br />gdp2019: 12919.5296<br />country: Romania","recyc_codes: o<br />count:    9<br />gdp2019: 12919.5296<br />country: Romania"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,190,112,1)","opacity":1,"size":11.1114632539058,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,190,112,1)"}},"hoveron":"points","name":"Romania","legendgroup":"Romania","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[0,0,0,0,0,0,19],"text":["recyc_codes: pet<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: hdpe<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: pvc<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: ldpe<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: pp<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: ps<br />count:    0<br />gdp2019:   820.0252<br />country: Rwanda","recyc_codes: o<br />count:   19<br />gdp2019:   820.0252<br />country: Rwanda"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,193,171,1)","opacity":1,"size":4.56571253224336,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,193,171,1)"}},"hoveron":"points","name":"Rwanda","legendgroup":"Rwanda","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[40,0,0,0,0,0,0],"text":["recyc_codes: pet<br />count:   40<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: hdpe<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: pvc<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: ldpe<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: pp<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: ps<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia","recyc_codes: o<br />count:    0<br />gdp2019:  7411.8361<br />country: Serbia"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,187,218,1)","opacity":1,"size":9.21720387085912,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,187,218,1)"}},"hoveron":"points","name":"Serbia","legendgroup":"Serbia","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[5,4,0,0,0,0,0],"text":["recyc_codes: pet<br />count:    5<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: hdpe<br />count:    4<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: pvc<br />count:    0<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: ldpe<br />count:    0<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: pp<br />count:    0<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: ps<br />count:    0<br />gdp2019: 65233.2824<br />country: Singapore","recyc_codes: o<br />count:    0<br />gdp2019: 65233.2824<br />country: Singapore"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,172,252,1)","opacity":1,"size":20.6173235816579,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,172,252,1)"}},"hoveron":"points","name":"Singapore","legendgroup":"Singapore","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3,3,4,1,1,7,7,2,2,5,5,6,3,3,4,4,1,7,2,2,5,5,6,3,3,4,4,1,7,2,2,5,5,6,3,3],"y":[0,0,0,0,0,0,3,6,0,0,2,0,1,0,28,0,8,0,30,38,16,211,0,0,0,1,17,27,0,30,15,0,6,0,0,0,9,0,4,0,3,4],"text":["recyc_codes: pet<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: hdpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pvc<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ps<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:    3<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:    6<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pet<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: hdpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: hdpe<br />count:    2<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pvc<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pvc<br />count:    1<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:   28<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:    8<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ps<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:   30<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:   38<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pet<br />count:   16<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pet<br />count:  211<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: hdpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pvc<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    1<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:   17<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:   27<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ps<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:   30<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:   15<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pet<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pet<br />count:    6<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: hdpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pvc<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ldpe<br />count:    9<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: pp<br />count:    4<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: ps<br />count:    0<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:    3<br />gdp2019: 81993.7271<br />country: Switzerland","recyc_codes: o<br />count:    4<br />gdp2019: 81993.7271<br />country: Switzerland"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(139,147,255,1)","opacity":1,"size":22.6771653543307,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(139,147,255,1)"}},"hoveron":"points","name":"Switzerland","legendgroup":"Switzerland","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3],"y":[0,0,0,0,0,0,12],"text":["recyc_codes: pet<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: hdpe<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: pvc<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: ldpe<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: pp<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: ps<br />count:    0<br />gdp2019:   679.2902<br />country: Togo","recyc_codes: o<br />count:   12<br />gdp2019:   679.2902<br />country: Togo"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(213,117,254,1)","opacity":1,"size":3.77952755905512,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(213,117,254,1)"}},"hoveron":"points","name":"Togo","legendgroup":"Togo","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3,4,4,1,7,7,2,2,5,5,6,3,3,4,1,7,2,5,6,3,4,4,1,7,2,2,5,5,6,6,3,3,4,4,1,1,7,2,2,5,5,6,3],"y":[72,0,0,0,0,0,0,0,7,0,0,3,3,15,0,2,0,30,49,0,0,0,1,0,0,0,13,208,0,0,0,3,18,9,0,5,5,16,3,9,0,8,0,1,2,0,4,0,11],"text":["recyc_codes: pet<br />count:   72<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:    7<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    3<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    3<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:   15<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    2<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:   30<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:   49<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    1<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:   13<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:  208<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    3<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:   18<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    9<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    5<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:    5<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:   16<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:    3<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pet<br />count:    9<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: hdpe<br />count:    8<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pvc<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    1<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ldpe<br />count:    2<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: pp<br />count:    4<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: ps<br />count:    0<br />gdp2019: 65297.5175<br />country: United States","recyc_codes: o<br />count:   11<br />gdp2019: 65297.5175<br />country: United States"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(249,98,221,1)","opacity":1,"size":20.6256988039235,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(249,98,221,1)"}},"hoveron":"points","name":"United States","legendgroup":"United States","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[4,1,7,2,5,6,3,4,1,7,2,5,6,3,4,4,1,7,2,2,5,5,6,3,3,4,4,1,1,7,7,2,2,5,5,6,3,3],"y":[0,0,0,0,0,0,1,0,0,0,0,0,0,20,1269,83,0,0,19,0,0,1,0,0,1,9,24,0,12,0,1,0,3,3,1,0,180,45],"text":["recyc_codes: pet<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pvc<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ps<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:    1<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pet<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pvc<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ps<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:   20<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pet<br />count: 1269<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pet<br />count:   83<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pvc<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:   19<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    1<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ps<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:    1<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pet<br />count:    9<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pet<br />count:   24<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: hdpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: hdpe<br />count:   12<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pvc<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pvc<br />count:    1<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ldpe<br />count:    3<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    3<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: pp<br />count:    1<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: ps<br />count:    0<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:  180<br />gdp2019:  2715.2760<br />country: Vietnam","recyc_codes: o<br />count:   45<br />gdp2019:  2715.2760<br />country: Vietnam"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(255,101,172,1)","opacity":1,"size":6.76980209368465,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(255,101,172,1)"}},"hoveron":"points","name":"Vietnam","legendgroup":"Vietnam","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.7625570776256,"r":7.30593607305936,"b":40.1826484018265,"l":48.9497716894977},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Amount of Plastic by Country and GDP (2019)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,7.6],"tickmode":"array","ticktext":["hdpe","ldpe","o","pet","pp","ps","pvc"],"tickvals":[1,2,3,4,5,6,7],"categoryorder":"array","categoryarray":["hdpe","ldpe","o","pet","pp","ps","pvc"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Recycling Codes","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-63.45,1332.45],"tickmode":"array","ticktext":["0","500","1000"],"tickvals":[0,500,1000],"categoryorder":"array","categoryarray":["0","500","1000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Plastic Count","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.93503937007874},"annotations":[{"text":"country<br />gdp2019","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"6ec06ac31fa7":{"x":{},"y":{},"size":{},"colour":{},"type":"scatter"}},"cur_data":"6ec06ac31fa7","visdat":{"6ec06ac31fa7":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="plastic-type-vs-company-type" class="section level3">
+<h3>4.3 Plastic type vs company type</h3>
+<p>The last plot shows the distribution of plastic types for each company type (packaging goods, packaging producers, and retail &amp; hospitality). Packaging goods has by far the most total plastic, with the most plastic type being <code>pet</code>. Packaging producers seems to mostly contain only <code>o</code> (other) types of plastics. Lastly, there is limited data for the retail &amp; hospitality.</p>
+<pre class="r"><code>## plot 2: company by ppv
+company_type_stats &lt;- df %&gt;%
+  select(company_type, recyc_codes, count) %&gt;%
+  group_by(company_type, recyc_codes) %&gt;%
+  summarise(mean_plastic = floor(mean(count)),
+            sd_plastic = sd(count),
+            n=n(), .groups = &#39;drop&#39;,
+            se_plastic = sd_plastic/sqrt(n)) %&gt;%
+  mutate(sd_plastic = replace_na(sd_plastic, 0)) %&gt;%
+  mutate(se_plastic = replace_na(se_plastic, 0))
+
+ggplot(company_type_stats, aes(recyc_codes, mean_plastic)) +
+  facet_wrap(~company_type) + 
+  geom_bar(stat=&#39;summary&#39;, fun=mean) +
+  geom_errorbar(aes(y=mean_plastic,
+                 ymin=mean_plastic-se_plastic,
+                 ymax=mean_plastic+se_plastic)) +
+  labs(title=&quot;Average plastic type per company type&quot;,
+       x=&quot;Recycling Codes&quot;, y=&quot;Global Average Plastic Count&quot;)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="pam-clustering" class="section level2">
+<h2>5.0 PAM clustering</h2>
+<pre class="r"><code># step 1: process data
+df_gower &lt;- df %&gt;%
+  select(-recyc_nums) %&gt;%
+  group_by(country) %&gt;%
+  summarise(count = sum(count), gdp2019) %&gt;%
+  distinct() %&gt;%
+  ungroup() %&gt;%
+  mutate_if(is.character, as.factor)</code></pre>
+<pre class="r"><code># step 2: choose k value
+gower &lt;- daisy(df_gower, metric=&quot;gower&quot;)
+
+sil_width &lt;- vector()
+for (i in 2:10){
+  pam_fit &lt;- pam(gower, diss=T, k=i)
+  sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+
+ggplot() + 
+  geom_line(aes(x=1:10, y=sil_width)) + 
+  scale_x_continuous(name=&quot;k&quot;, breaks=1:10)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># step 4: run cluster analysis (PAM)
+pam3 &lt;- pam(gower, diss=T, k=3)
+
+df_gower %&gt;% mutate(cluster=pam3$clustering)%&gt;%
+  group_by(cluster) %&gt;% 
+  summarise_if(is.numeric, .funs=list(&quot;mean&quot;=mean, 
+                                      &quot;median&quot;=median,
+                                      &quot;sd&quot;=sd), na.rm=T) %&gt;%
+  pivot_longer(contains(&quot;_&quot;)) %&gt;%
+  separate(name, sep=&quot;_&quot;, into=c(&quot;variable&quot;, &quot;stat&quot;)) %&gt;%
+  pivot_wider(names_from=&quot;variable&quot;, values_from=&quot;value&quot;) %&gt;%
+  arrange(stat)</code></pre>
+<pre><code>## # A tibble: 9 x 4
+##   cluster stat   count gdp2019
+##     &lt;int&gt; &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1       1 mean    345.   7549.
+## 2       2 mean    139.  47561.
+## 3       3 mean   6061.   2510.
+## 4       1 median  210.   6703.
+## 5       2 median   46   46195.
+## 6       3 median 6949    2230.
+## 7       1 sd      439.   5915.
+## 8       2 sd      191.  16709.
+## 9       3 sd     2216.    869.</code></pre>
+<pre class="r"><code># step 5: visualize cluster
+plot(pam3, which=2)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For the clustering analysis, I looked at the variables country, total plastic count, and GDP. From the silhouette width plot, we see that <code>k=3</code> clusters is the best option for the given data. With further analysis, we see that <code>group 1</code> has a mean plastic count of 345 and GDP of ~7,550 USD, <code>group 2</code> has a mean plastic count of 139 and GDP of ~47,560 USD, and <code>group 3</code> has a mean plastic count of 6,061 and GDP of 2,510 USD. Moreover, <code>group 2</code> is the high GDP/low plastic producing countries, <code>group 1</code> is the medium GDP/medium plastic producing countries, and <code>group 3</code> is the low GDP/high plastic producing countries.</p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

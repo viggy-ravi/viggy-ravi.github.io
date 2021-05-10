@@ -1,0 +1,444 @@
+---
+title: "Project 1: Tidying Up Plastic"
+author: "Vignesh Ravindranath (vgr325)"
+date: '2021-04-06'
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r global_options, include=FALSE}
+#DO NOT EDIT THIS CHUNK OR ANYTHING ABOVE IT!
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F, tidy=T, tidy.opts=list(width.cutoff=50), R.options=list(max.print=100,dplyr.print_max=100))
+```
+
+## 0.0 Introduction
+
+No one can go a day without using plastic. It has become an essential item in many of the products we buy or use regularly, furniture to clothing to electronics. Because plastic is so ubiquitous, it becomes easy at times to forget about the impact it has on the environment. Through this project, I hope to learn about the different types of plastic (I keep forgetting what all the recycling numbers mean) and their main producers. That way I can do my part to recycle correctly and avoid plastics that have the largest impact on the environment. I also hope to learn how external factors play a role in a country's plastic waste production.
+
+### 0.1 Imports
+
+I will be using three datasets for this report: `plastics`, `plaEcon`, and `gdp`.
+
+The `plastics` dataset was imported from [`tidytuesdayR`](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-01-26/readme.md) and contains information of plastic waste collected by country for several households. The plastic waste is sorted by recycling codes and labeled with the parent company that produced the plastic. `tidytuesdayR` must be installed to import the dataset (see code below). The seven plastic types are listed below in order of their recycling number:
+
+1. **pet** (polyethylene terephthalate) 
+    * used in soft drink bottles, food containers
+2. **hdle** (high-density polyethylene) 
+    * used in plastic milk containers, plastic bags, bottle caps, oil cans
+3. **pvc** (polyvinyl chloride) 
+    * used in window frames, chemical bottles, pipes
+4. **ldpe** (low-density polyethylene) 
+    * used in plastic/Ziploc bags, squeeze bottles 
+5. **pp** (polypropylene) 
+    * used in flower pots, bumpers, industrial fibers, microwavable food containers
+6. **ps** (polystyrene) 
+    * used in toys, video cassettes, beer cups, Styrofoam
+7. **o** (other) 
+    * polycarbonate, polyamide, bioplastics
+
+The `plaEcon` or `new-plastics-economy-global commitment` dataset was imported from [data.world.com](https://data.world/kgarrett/new-plastics-economy-global-commitment) and contains information about various companies and the plastic packaging volume (tons) they produced in the year 2019.
+
+Lastly, the `gdp` dataset was imported from [World Bank](https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?end=2019&start=2019) and contains the GDP per capita (USD) for all countries between the years 1960 and 2020. However, we will only select the GDP for the year 2019, since the other two datasets are limited to this year.  
+
+The last two datasets (as well as the .Rmd and .R files) can be found on my [Project 1 GitHub](https://github.com/viggy-ravi/sds348_project1) folder. Code to import the datasets is below. Just hit run and everything should be fine!
+
+```{r}
+# uncomment to install these package for project 1
+#install.packages(c("tidytuesdayR", "gapminder", "plotly"))
+
+library(tidyverse)
+library(ggplot2)
+library(plotly)    # used for fancy plots
+library(gapminder) # used for fancy plots
+library(cluster)   # PAM
+
+## plastics
+plastics <- tidytuesdayR::tt_load('2021-01-26')$plastics
+
+## Plastic production per volume (tons) for major plastic 
+## producing companies in 2019
+plaEcon <- read.csv("https://raw.githubusercontent.com/viggy-ravi/sds348_project1/main/data/new-plastics-economy-global%20commitment.csv",
+                 sep=",", na.strings="NA", strip.white=T, stringsAsFactors=F)
+
+## Worldbank GDP per Capita 
+gdp <- read.csv("https://raw.githubusercontent.com/viggy-ravi/sds348_project1/main/data/worldbank_gdp.csv",
+                sep=",", na.strings="NA", strip.white=T, stringsAsFactors=F,
+                skip=4)
+```
+
+## 1.0 Tidying 
+
+### 1.1 Exploring the data
+
+Before we jump right in, we first need to explore the data a bit to understand what information is contained in these datasets, if they are missing any values (`NA` or otherwise), and how we can best join the three datasets together. Let's start with the `plastics` dataset.
+
+```{r}
+# glimpse at plastics
+plastics %>% summary()
+plastics %>% select(country) %>% unique() %>% count()
+```
+
+From the quick summary, we see that there is a total of 13,328 rows that describe the plastic waste for 69 countries. The plastic is sorted into the first seven recycling codes (in numerical order: `pet`, `hdpe`, `pvc`, `ldpe`, `pp`, `ps`, `o`) and contains some other information about how the plastic was collected. For the purpose of this report, we are mostly interested in the country, parent_company, and the seven recycling codes. Also, based on the summary, we see that there are a lot of missing values that may need to be taken care of later. (This dataset looks like it needs to be pivoted longer!) 
+
+```{r}
+# look at pla_econ
+head(plaEcon)
+plaEcon %>% summary()
+```
+The `plaEcon` dataset is simpler and only contains information about each major company, the amount of plastic packaging it produced in the year 2019, and what the plastic was used for. Note that some of the plastic packaging is `not disclosed` in this dataset. We might want to change these to `NA` values so its easier to manipulate later on.
+
+```{r}
+# glimpse at gdp
+dim(gdp)
+
+# columns
+names(gdp)
+```
+
+Lastly, the `gdp` dataset contains information about the GDP for 264 countries from the year 1960 to 2020. We are only interested in the year 2019.
+
+### 1.2 Data cleaning and pivoting
+
+Great! Now we can start reducing out datasets to contain only the necessary columns. I will go ahead and rename some of the column names so they're easier to call later on. I will also pivot longer the `plastics` dataset to contain the recycling code (`recyc_codes`) and its respective count for each (country, parent_company) grouping. I will also convert the `not disclosed` rows to `NA` values in the `plaEcon` dataset and select only the `X2019` column in the `gdp` dataset.
+
+```{r}
+# tidy plastics
+plastics <- plastics %>% 
+  select(-year, -empty, -num_events, -volunteers, -grand_total) %>%
+  # the dataset has additional rows for Grand Total that we can filter out
+  filter(parent_company != 'Grand Total')
+
+tidy_plastic <- plastics %>% 
+  pivot_longer(3:9, names_to="recyc_codes", values_to="count")
+
+glimpse(tidy_plastic)
+
+## looks tidy!
+glimpse(tidy_plastic)
+
+# tidy pla_econ
+tidy_plaEcon <- plaEcon %>%
+  rename(ppv = plastic_packaging_volume_in_tons) %>%
+  mutate(ppv = na_if(ppv, "not disclosed"))
+
+# tidy gdp
+tidy_gdp <- gdp %>% 
+  select(Country.Name, X2019) %>%
+  rename(gdp2019 = X2019)
+```
+
+### 1.3 Spelling corrections
+
+It looks like a few country names are different between the `plastics` and `gdp` datasets. Ideally, we could have converted the country names to ISO country codes, but since there are only a few differences, I will do this manually. (I compared the differences by directly looking at the World Bank website.)
+
+```{r}
+# find differing countries
+anti_join(tidy_plastic, tidy_gdp, by=c("country"="Country.Name")) %>% 
+  select(country) %>% distinct()
+```
+
+```{r}
+# This is what I need to change
+
+# Cote D_ivoire                   -> Cote d'Ivoire (not in first join) (ignore)
+# ECUADOR                         -> Ecuador
+# Hong Kong                       -> Hong Kong SAR, China
+# NIGERIA                         -> Nigeria
+# Taiwan_ Republic of China       -> not in World Bank (ignore)
+# United States of America        -> United States
+# Korea                           -> Korea, Rep.
+# United Kingdom of Great Britain -> United Kingdom
+
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "ECUADOR", "Ecuador")
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "Hong Kong", "Hong Kong SAR, China")
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "NIGERIA", "Nigeria")
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "United States of America", "United States")
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "Korea", "Korea, Rep.")
+tidy_plastic$country <- str_replace_all(tidy_plastic$country, 
+                                        "United Kingdom of Great Britain & Northern Ireland", 
+                                        "United Kingdom")
+
+tidy_plastic %>% filter(country %in% c("Ecuador",
+                                      "Hong Kong SAR, China",
+                                      "Nigeria",
+                                      "United States",
+                                      "Korea, Rep.",
+                                      "United Kingdom")) %>%
+  select(country) %>% distinct()
+```
+
+Wonderful! We can start confidently joining now.
+
+## 2.0 Joining/Merging
+
+Overall, it looks like the `plastics` and `plaEcon` datasets can be joined along the _parent_company/company_ columns, and the `plastics` and `gdp` datasets can be joined along the _country_ columns. 
+
+```{r}
+# how many unique companies are there
+tidy_plastic %>% select(parent_company) %>% unique() %>% count() %>% pull()
+tidy_plaEcon %>% select(company) %>% unique() %>% count() %>% pull()
+
+# inner join on plastics and plaEcon
+temp <- inner_join(tidy_plastic, tidy_plaEcon, by=c("parent_company"="company")) %>% 
+  mutate(count = replace_na(count, 0))
+
+# how many mutual companies
+temp %>% select(parent_company) %>% unique() %>% count() %>% pull()
+
+# how many unique countries are there
+temp %>% select(country) %>% unique() %>% count() %>% pull()
+tidy_gdp %>% select(Country.Name) %>% unique() %>% count() %>% pull()
+
+# inner join on plastics/plaEcon and gdp
+df <- inner_join(temp, tidy_gdp, by=c("country"="Country.Name")) %>%
+  mutate(ppv = as.numeric(ppv)) %>%
+  drop_na() %>%
+  distinct()
+
+# how many mutual countries
+df %>% select(country) %>% unique() %>% count() %>% pull()
+```
+
+Since all datasets contain some valuable information/columns, an `inner join` is necessary. From the first inner join, we saw that `plastics` contains a lot more companies (10,822) than the `plaEcon` dataset (182). So, we will be losing a lot of information from the plastic dataset. This may impact the accuracy of future correlations. After the join, we see that only 14 companies lasted with 1925 data points. Next, from the second inner join, we see that `temp` contains 59 countries (dropped by 10) and `gdp` contains 264 countries. The final data frame contains 58 countries, as expected (the EMPTY countries were dropped). I have dropped the rows where `ppv` has `NA` values, since we will be needing this column for future analysis. There is also no easy way to estimate these values since they are specific to the company.
+
+
+## 3.0 Wrangling
+
+Now for the interesting part! There are a few chunks below, so I will list the main ideas of them here, and describe the results at the end of this section. 
+
+* Summary of `df` data frame
+* Convert (mutate) recycling codes to their corresponding numbers (1-7)
+* Countries with the most/least diversity of plastics (by number of companies) - we will use some of this data in a future plot
+* Count number of plastics per recycling code
+* Top 5 companies that produce the most plastic packaging per volume
+* Plastic count in higher/lower gdp rated countries (median gdp)
+
+### 3.1 Summary of data frame
+```{r}
+## summary 
+df %>% summary()
+```
+
+### 3.2 Mutate
+```{r}
+## mutate recycling code to number
+df <- df %>%
+  mutate(recyc_nums = case_when(
+    recyc_codes == "pet"  ~ 1,
+    recyc_codes == "hdpe" ~ 2,
+    recyc_codes == "pvc"  ~ 3,
+    recyc_codes == "ldpe" ~ 4,
+    recyc_codes == "pp"   ~ 5,
+    recyc_codes == "ps"   ~ 6,
+    recyc_codes == "o"    ~ 7
+  )) %>%
+  arrange(country, parent_company, recyc_nums)
+glimpse(df)
+```
+
+### 3.3 Plastic diversity
+```{r}
+# find countries with most diverse plastics
+df_max <- df %>% 
+  select(country, parent_company) %>%
+  group_by(country) %>%
+  summarise(num_companies = n()) %>%
+  slice_max(num_companies, n=5)
+df_max
+
+# find countries with least diverse plastics
+df_min <- df %>% 
+  select(country, parent_company) %>%
+  group_by(country) %>%
+  summarise(num_companies = n()) %>%
+  slice_min(num_companies, n=5)
+df_min
+
+# save the country names for a future plot
+top_countries <- df_max %>% pull(country)
+bot_countries <- df_min %>% pull(country)
+```
+
+
+### 3.4 Plastic count
+```{r}
+# group_by (recycling code), summarize (count)
+df %>% 
+  group_by(recyc_codes) %>%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %>%
+  arrange(desc(total_count))
+```
+
+### 3.5 Plastic producers
+```{r}
+# top 5 companies (ppv)
+df %>% 
+  select(parent_company, ppv) %>%
+  distinct() %>%
+  top_n(5) %>%
+  arrange(desc(ppv))
+```
+
+### 3.6 GDP analysis of plastic waste
+```{r}
+# filter recyc_codes by median gdp
+med_gdp <- df %>% summarise(median(gdp2019)) %>% pull()
+med_gdp
+
+df_top_med <- df %>%
+  filter(gdp2019 > med_gdp) %>%
+  group_by(recyc_codes) %>%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %>%
+  arrange(desc(total_count))
+df_top_med
+
+df_top_med %>% summarise(upper_med_plastic_count = sum(total_count)) %>% pull()
+
+df_low_med <- df %>%
+  filter(gdp2019 < med_gdp) %>%
+  group_by(recyc_codes) %>%
+  summarise(total_count = sum(count), number = mean(recyc_nums)) %>%
+  arrange(desc(total_count))
+df_low_med
+
+df_low_med %>% summarise(lower_med_plastic_count = sum(total_count)) %>% pull()
+```
+
+The data frame summary indicates that there are 1234 data points (left) and all `NA's` seem to have filtered out through the joins. The most interesting columns seem to be the `ppv` and `gdp2019` purely based on their interquartile range vales. First, I will convert the recycling codes to their corresponding number codes (1-7). Specifically, `pet`=`1`, `hdpe`=`2`, `pvc`=`3`, `ldpe`=`4`, `pp`=`5`, `ps`=`6`, `o`=`7`. This will help arrange/sort any future analysis if necessary. From section `3.4` it looks like `pet` is the most common plastic found in waste. 
+
+Section `3.3` shows the plastic diversity of various countries. I measured this by counting the number of distinct parent companies for each country (the parent company refers the the company that produced the plastic that was later found in waste). I was expecting countries with higher GDP in general to have more diverse plastics, while countries with lower GDP to have less diverse plastics. Based on the results, it looks like the United States, Argentina, Switzerland, Vietnam, and India had the most diversity of plastics, while Benin, Cyprus, El Salvador, Romania, Serbia, Singapore, and Togo had the least diversity of plastic. That was an interesting result, as there is a mix of high GDP and low GDP countries in both groups. For example, India has a GDP of ~2100 USD (high diversity) while Singapore has a GDP of 65,000 USD (low diversity). It looks like both GDP and other external factors (like lifestyle and business presence) might play a factor in the diversity of plastics in countries. 
+
+I wanted to delve deeper into how GDP affects plastic waste collected. Section `3.6` explores the amount of plastic produced by countries with GDP higher and lower than the median GDP ~9,900 USD. From previous studies, its clear that countries with lower GDP typically produce more plastic waste since they have less infrastructure to recycle their waste. This was reflected in the results, as higher GDP countries produced ~4,000 pieces of plastic waste, while lower GDP countries produced ~29,000 pieces of plastic waste! 
+
+
+## 4.0 Visualization
+
+### 4.1 Correlation plot
+
+Based on the analysis done in section `3.0`, it seemed clear that there is a correlation between GDP and plastic waste. However, the correlation plot below doesn't seem to reflect that. It looks like the 2019 GDP does not seem to correlate with any individual plastic type (or the total plastic count). This might be due to limited data, both in the `plastic` dataset and in the `gdp` dataset. In general, GDP seems to have a slight negative correlation with each plastic (similarly there was a higher negative correlation between GDP and total plastic count). Interestingly, some plastics seem to correlate with each other. Specifically, `ps` and 'pet' have a reasonable structures with `hdpe` and `ldpe`. 
+
+To produce this correlation plot, I joined the original `plastics` dataset with the `gdp` dataset to see how GDP correlates with each type of plastic. 
+
+```{r}
+df2 <- inner_join(plastics, tidy_gdp, by=c("country"="Country.Name"))
+
+cormat2 <- df2 %>% select(is.numeric) %>% cor(use="pair")
+
+tidycor2 <- cormat2 %>% as.data.frame %>% rownames_to_column("var1") %>%
+  pivot_longer(-1, names_to="var2", values_to="correlation")
+
+tidycor2 %>% ggplot(aes(var1, var2, fill=correlation)) + 
+  geom_tile() +
+  scale_fill_gradient2(low="red", mid="white", high="blue") +
+  geom_text(aes(label=round(correlation,2)), color="black", size=4) +
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + 
+  coord_fixed()
+```
+
+### 4.2 Interactive plot 
+
+The plot below is one of my most favorite plots. The plot below shows the distribution of plastic found in each country by plastic type. The data points are different sizes based on the GDP of the country (larger circle = higher GDP). This is an **interactive map**, where you can **click on the circles in the legend** (right) to remove/add countries from the plot. You can also **double-click on a circle in the legend** to isolate the country on the plot. Moreover, you can **hover over points on the plot** to get more information about the data. I limited the countries to the most and least diverse countries (from section `3.3`) since plotting all 58 countries was a bit too busy. However, the main idea still stands: in general, countries with larger GDP (larger circles) produce less plastic waste, while countries with lower GDP (smaller circles) produce more plastic waste. Feel free to remove the larger circles from the plot to see all the countries.  
+
+```{r}
+# plot 1: count vs gdp by country
+
+## concatenate top and bottom countries (diversity)
+## top: US, Argentina, Switzerland, Vietnam, India
+## bot: Benin, Cyprus, El Salvador, Romania, Rowanda, Serbia, Singapore, Togo
+filter_countries <- c(top_countries, bot_countries)
+
+## filter out these countries only
+df_filter <- df %>% filter(country %in% filter_countries)
+
+## plot
+p1 <- ggplot(df_filter, aes(recyc_codes, count, size=gdp2019, color=country)) + 
+  geom_point() +
+  labs(title="Amount of Plastic by Country and GDP (2019)",
+       x="Recycling Codes", y="Plastic Count")
+ggplotly(p1)
+```
+
+### 4.3 Plastic type vs company type
+
+The last plot shows the distribution of plastic types for each company type (packaging goods, packaging producers, and retail & hospitality). Packaging goods has by far the most total plastic, with the most plastic type being `pet`. Packaging producers seems to mostly contain only `o` (other) types of plastics. Lastly, there is limited data for the retail & hospitality. 
+
+```{r}
+## plot 2: company by ppv
+company_type_stats <- df %>%
+  select(company_type, recyc_codes, count) %>%
+  group_by(company_type, recyc_codes) %>%
+  summarise(mean_plastic = floor(mean(count)),
+            sd_plastic = sd(count),
+            n=n(), .groups = 'drop',
+            se_plastic = sd_plastic/sqrt(n)) %>%
+  mutate(sd_plastic = replace_na(sd_plastic, 0)) %>%
+  mutate(se_plastic = replace_na(se_plastic, 0))
+
+ggplot(company_type_stats, aes(recyc_codes, mean_plastic)) +
+  facet_wrap(~company_type) + 
+  geom_bar(stat='summary', fun=mean) +
+  geom_errorbar(aes(y=mean_plastic,
+                 ymin=mean_plastic-se_plastic,
+                 ymax=mean_plastic+se_plastic)) +
+  labs(title="Average plastic type per company type",
+       x="Recycling Codes", y="Global Average Plastic Count")
+```
+
+
+## 5.0 PAM clustering
+
+```{r}
+# step 1: process data
+df_gower <- df %>%
+  select(-recyc_nums) %>%
+  group_by(country) %>%
+  summarise(count = sum(count), gdp2019) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate_if(is.character, as.factor)
+```
+
+```{r}
+# step 2: choose k value
+gower <- daisy(df_gower, metric="gower")
+
+sil_width <- vector()
+for (i in 2:10){
+  pam_fit <- pam(gower, diss=T, k=i)
+  sil_width[i] <- pam_fit$silinfo$avg.width
+}
+
+ggplot() + 
+  geom_line(aes(x=1:10, y=sil_width)) + 
+  scale_x_continuous(name="k", breaks=1:10)
+```
+
+```{r}
+# step 4: run cluster analysis (PAM)
+pam3 <- pam(gower, diss=T, k=3)
+
+df_gower %>% mutate(cluster=pam3$clustering)%>%
+  group_by(cluster) %>% 
+  summarise_if(is.numeric, .funs=list("mean"=mean, 
+                                      "median"=median,
+                                      "sd"=sd), na.rm=T) %>%
+  pivot_longer(contains("_")) %>%
+  separate(name, sep="_", into=c("variable", "stat")) %>%
+  pivot_wider(names_from="variable", values_from="value") %>%
+  arrange(stat)
+```
+
+```{r}
+# step 5: visualize cluster
+plot(pam3, which=2)
+```
+
+For the clustering analysis, I looked at the variables country, total plastic count, and GDP. From the silhouette width plot, we see that `k=3` clusters is the best option for the given data. With further analysis, we see that `group 1` has a mean plastic count of 345 and GDP of ~7,550 USD, `group 2` has a mean plastic count of 139 and GDP of ~47,560 USD, and `group 3` has a mean plastic count of 6,061 and GDP of 2,510 USD. Moreover, `group 2` is the high GDP/low plastic producing countries, `group 1` is the medium GDP/medium plastic producing countries, and `group 3` is the low GDP/high plastic producing countries. 

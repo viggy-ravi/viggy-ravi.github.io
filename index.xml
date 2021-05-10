@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chris Turner</title>
+    <link>/</link>
+    <description>Recent content on Chris Turner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Best of Both Worlds: Reticulate for R and Python</title>
+      <link>/post/2021/05/09/best-of-both-worlds-reticulate-for-r-and-python/</link>
+      <pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/05/09/best-of-both-worlds-reticulate-for-r-and-python/</guid>
+      <description>Are All Programming Languages Equal?After programming with R for about a semester, I found it exponentially difficult to do exploratory data analysis in Python - a language I’ve been using for years now. R is a great programming language to perform many statistical tests; moreover, the simplicity of tidyverse makes it so easy to do exploratory data analysis. Also, there’s piping - I’m not sure who thought of that, but its my favorite programming tool I’ve learned so far!</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Covid Outcome Prediction</title>
+      <link>/project/project2/</link>
+      <pubDate>Fri, 07 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>0.0 IntroductionFor this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on this kaggle challenge). The dataset contains information on 566,602 patients for 23 different attributes. Before you get into the data, just know that the bolded items are the attributes that remain in my dataset for analysis after cleaning. Also, the original dataset uses 1&#39;s for yes, 2&#39;s for no, and (97,98,99, or 9999-99-99) for NA.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Tidying Up Plastic</title>
+      <link>/project/project1/</link>
+      <pubDate>Tue, 06 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>0.0 IntroductionNo one can go a day without using plastic. It has become an essential item in many of the products we buy or use regularly, furniture to clothing to electronics. Because plastic is so ubiquitous, it becomes easy at times to forget about the impact it has on the environment. Through this project, I hope to learn about the different types of plastic (I keep forgetting what all the recycling numbers mean) and their main producers.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Check out some of my R projects below:
+ Wrangling &amp;amp; Exploratory Data Analysis: Understanding Plastic Waste in Countries
+ Modeling, Inference, Prediction: COVID-19 Hospitalization Prediction
+  --</description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resume/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

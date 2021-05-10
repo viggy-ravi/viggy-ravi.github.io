@@ -1,0 +1,67 @@
+---
+title: 'Best of Both Worlds: Reticulate for R and Python'
+author: ''
+date: '2021-05-09'
+slug: best-of-both-worlds-reticulate-for-r-and-python
+categories: []
+tags: []
+description: ''
+---
+
+## Are All Programming Languages Equal?
+
+After programming with R for about a semester, I found it exponentially difficult to do exploratory data analysis in Python - a language I've been using for years now. R is a great programming language to perform many statistical tests; moreover, the simplicity of `tidyverse` makes it so easy to do exploratory data analysis. Also, there's *piping* - I'm not sure who thought of that, but its my favorite programming tool I've learned so far!
+
+That being said, there are a lot of Python packages - especially the machine learning packages - that I enjoy using and am familiar with. Luckily for me, I don't have to choose between the two programming languages anymore.
+
+## What is `reticulate`
+
+`Reticulate` is an R package that allows you to interface to Python modules, classes, and functions. So now you can expertly analyze your data and maximize the benefits of two languages.
+
+## How to use Python in RStudio
+
+For this example, I will be performing a t-test to see if the weights of male and female mosquitoes are statistically different. In the process, we will learn how to define variables in both the R and Python chunks, and see how to interface variables between the two scopes. *Note, the weights of mosquitoes are log-normal, meaning their weights are normally distributed if transformed with the natural log.*
+
+```{python}
+# Untransformed data of mosquito weights (female, male)
+f = [0.291, 0.208, 0.241, 0.437, 0.228, 0.256, 0.208, 0.234, 0.320]
+m = [0.185, 0.222, 0.149, 0.187, 0.191, 0.219, 0.132, 0.144, 0.140]
+
+# print pair of two weights
+print("female","male")
+for pair in zip(f,m):
+  print(pair)
+
+```
+However, these weights are log-normal. We can use `NumPy` to take the log of the mosquito weights.
+
+```{python}
+import numpy as np
+
+# find the log weights
+f_log = np.log(f)
+m_log = np.log(m)
+```
+
+R is most well known for its statistical packages, so lets make use of them! First, we'll import the library `reticulate`, which can help us interface Python variables with R functions. Then we will be able to use Python-defined variables using the `py$` prefix in the R chunk.
+
+```{r}
+library(reticulate)
+
+# perform a t-test in R
+p_value <- t.test(py$f_log, py$m_log)$p.value
+```
+
+Now, lets see what the p-value is. We can access R-defined variables by using the `r.` prefix. 
+
+```{python}
+print(round(r.p_value,4))
+```
+Great! We see that the p-value of the log-normal mosquito weights is less than 0.05, so we can reject the null hypothesis and state that the mean weights of male and female mosquitoes are different. 
+
+## Conclusion
+
+Programming languages are tools. As smart problem-solvers, we can now have more tools at our disposal to analyze data with ease! Happy coding.
+
+
+![](https://media4.giphy.com/media/IwAZ6dvvvaTtdI8SD5/giphy.gif)
