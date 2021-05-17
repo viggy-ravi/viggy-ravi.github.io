@@ -38,7 +38,9 @@ class_diag <- function(probs, truth, p=0.5){
 
 ## 0.0 Introduction
 
-For this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on  [this kaggle challenge](https://www.kaggle.com/tanmoyx/covid19-patient-precondition-dataset)). The dataset contains information on **566,602 patients for 23 different attributes**. Before you get into the data, just know that the **bolded items** are the attributes that **remain** in my dataset for analysis after cleaning. Also, the original dataset uses `1's` for yes, `2's` for no, and (`97`,`98`,`99`, or `9999-99-99`) for `NA`.
+A health crisis of massive proportion such as the current COVID-19 pandemic has provided us ample opportunity to reflect on our healthcare system and how we can strengthen it. As we heard at the beginning of the pandemic, healthcare officials want to 'flatten the curve' to ensure sufficient supplies will be available to patients, thus minimizing casualties. For this report, I will look into data provided from COVID-19 patients, provided by the Mexican government ([link](https://www.kaggle.com/tanmoyx/covid19-patient-precondition-dataset)), to build a model to predict hospitalization rates and hopefully provide insight on where to best allocate resources.  
+
+The dataset contains information on **566,602 patients for 23 different attributes**. The original dataset uses `1's` for yes, `2's` for no, and (`97`,`98`,`99`, or `9999-99-99`) for `NA`. Below, the **bolded items** are the attributes that **remain** in the report for analysis after cleaning, as the others either have a lot of `NA's` or `2's` (no). I will tidy the data in `Section 0.2` and begin analysis in `Section 1.0`.
 
 1. `id` - unique number for patients
 
@@ -86,14 +88,12 @@ For this report I will be looking into COVID-19 patient pre-condition dataset pr
 
 23. **`covid_res`** - if patient has resistance - tested positive (1), negative (2), or is waiting for results (3)
 
-Again, I will only be analyzing the **bolded attributes** as the others either have a lot of `NA's` or `2's` (no). They don't have sufficient information to be analyzed. The cleaned data can be found on my [github repository](https://github.com/viggy-ravi/covid_outcome_predictions) repository. I will tidy the data in section `0.2` and begin analysis from section `1.0`.     
-
 ### 0.1 Imports
 
 ```{r}
 library(tidyverse)
 
-# import dataset (locally - file too large to fit on github)
+# import dataset
 covid <- read.csv("covid.csv")
 covid %>% head(3)
 
@@ -242,6 +242,7 @@ For the last step, I will remove features that don't have a large presence in th
 # summarize all numeric columns (these are between 0 and 1)
 colMeans(covid %>% dplyr::select(where(is.numeric)))
 ```
+
 So, we see that `copd`, `asthma`, `inmsupr`, `other_disease`, `cardiovascular`, `renal_chronic`, and `tobacco` have means less than 0.10, so they will be removed. I will leave the column `died` as it will be a useful target variable.
 
 ```{r}
@@ -297,9 +298,9 @@ covid %>% group_by(age_range) %>% summarise(n = round(n()/nrow(covid),2))
 
 The pandemic has disproportionately been affecting the elderly population, due to the physiological changes that come with aging and potential pre-existing health conditions ([ref](https://www.who.int/news-room/feature-stories/detail/who-delivers-advice-and-support-for-older-people-during-covid-19)). I would like to explore if the rates of pre-existing conditions do vary among the different age groups (as a check to see how accurate the data holds to the information we've heard). This can be examined through a multivariate analysis of variance test or a MANOVA test. I will compare the mean rates of pre-existing conditions - `diabetes`, `hypertension`, `obesity` - among different age groups (`age_range`).
 
-$H_0:$ For each response variable, the means of all groups are equal ($\mu_1 = \mu_2 = \ldots = \mu_m$).
+H0: For each response variable, the means of all groups are equal ($\mu_1 = \mu_2 = \ldots = \mu_m$).
 
-$H_A:$ For at least one response variable, at least one group mean differs ($\mu_i \ne \mu_{i'}$). 
+HA: For at least one response variable, at least one group mean differs ($\mu_i \ne \mu_{i'}$). 
 
 ```{r}
 # MANOVA (1)
@@ -321,7 +322,7 @@ pairwise.t.test(covid$hypertension,covid$age_range, p.adj="none")
 pairwise.t.test(covid$obesity,     covid$age_range, p.adj="none")
 ```
 
-From the one-way ANOVA tests and the individual t-tests, we see that most relations have differences in rates of pre-existing conditions between the various age groups (p < 0.05). However, it was interesting to see that the rates of diabetes between the age groups `<18` and `18-29` are closer together than for other groups (p = 0.005); also the rates of obesity between the age group `40-49` are closer to the age groups `50-64` and `65-74` (p=1.9e-9 and p=5.6e-6 respectively), but they are still statistically different. 
+From the one-way ANOVA tests and the individual t-tests, we see that most relations have differences in rates of pre-existing conditions between the various age groups (p < 0.05). However, it was interesting to see that the rates of diabetes between the age groups `<18` and `18-29` are closer together than for other groups (p = 0.005).
 
 That being said, since there were a lot of tests performed, we need to correct the p-value using the Bonferroni adjusted significance. 
 
@@ -384,9 +385,9 @@ Since the `obesity_rate`s are closest together, I will perform a randomized test
 
 For the randomization test, I will shuffle the `sex` label and calculate the mean differences of obesity rates between the two groups. 
 
-$H_0:$ The average obesity rates among the two groups are equal.
+H0: The average obesity rates among the two groups are equal.
 
-$H_A:$ The average obesity rates among the two groups are not equal
+HA: The average obesity rates among the two groups are not equal
 
 ```{r}
 # reduce dataset to important features
@@ -396,14 +397,12 @@ rnd_data <- rnd_data %>% select(sex, obesity)
 set.seed(813)
 
 rand_dist <- vector()
-# there is a lot of data, so I will only do 100 samples
-# though, I get the same results for 100 and 5000 samples
 for(i in 1:100){
   # sample sex
   perm <- data.frame(obesity=rnd_data$obesity,
                      sex=sample(rnd_data$sex))
   
-  # mean difference
+  # mean difference (F - M)
   rand_dist[i] <- mean(perm[perm$sex=="F",]$obesity) - 
                   mean(perm[perm$sex=="M",]$obesity)
 }
@@ -415,7 +414,7 @@ orig_diff <- rnd_data %>% group_by(sex) %>%
 round(orig_diff, 3)
 
 # p-value
-mean(rand_dist > orig_diff | rand_dist < -orig_diff)
+mean(rand_dist < orig_diff | rand_dist > -orig_diff)
 ```
 
 ### 2.3 Null Distribution
@@ -457,9 +456,9 @@ The intercept (`0.113`) indicates the probability of being hospitalized if you a
 ```{r}
 library(gridExtra)
 
-# only plot 25% of data points (to reduce execution time)
+# only plot 10% of data points (to reduce execution time)
 set.seed(813)
-plot_df <- sample_n(covid, 0.25*nrow(covid)) %>% 
+plot_df <- sample_n(covid, 0.10*nrow(covid)) %>% 
   select(sex, diabetes, hypertension, obesity, hospitalized)
 
 # plot regressions
@@ -603,6 +602,7 @@ The area under the curve is about 0.74, meaning that the degree of separability 
 # remove variable to clean environment 
 rm(list= ls()[!(ls() %in% c('covid','class_diag'))])
 ```
+
 ## 6.0 Logistic Regression - All of Data
 
 Now I will perform a logistic regression on all the attributes

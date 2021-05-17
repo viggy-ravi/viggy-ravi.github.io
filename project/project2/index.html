@@ -75,7 +75,8 @@
 
 <div id="introduction" class="section level2">
 <h2>0.0 Introduction</h2>
-<p>For this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on <a href="https://www.kaggle.com/tanmoyx/covid19-patient-precondition-dataset">this kaggle challenge</a>). The dataset contains information on <strong>566,602 patients for 23 different attributes</strong>. Before you get into the data, just know that the <strong>bolded items</strong> are the attributes that <strong>remain</strong> in my dataset for analysis after cleaning. Also, the original dataset uses <code>1's</code> for yes, <code>2's</code> for no, and (<code>97</code>,<code>98</code>,<code>99</code>, or <code>9999-99-99</code>) for <code>NA</code>.</p>
+<p>A health crisis of massive proportion such as the current COVID-19 pandemic has provided us ample opportunity to reflect on our healthcare system and how we can strengthen it. As we heard at the beginning of the pandemic, healthcare officials want to ‘flatten the curve’ to ensure sufficient supplies will be available to patients, thus minimizing casualties. For this report, I will look into data provided from COVID-19 patients, provided by the Mexican government (<a href="https://www.kaggle.com/tanmoyx/covid19-patient-precondition-dataset">link</a>), to build a model to predict hospitalization rates and hopefully provide insight on where to best allocate resources.</p>
+<p>The dataset contains information on <strong>566,602 patients for 23 different attributes</strong>. The original dataset uses <code>1's</code> for yes, <code>2's</code> for no, and (<code>97</code>,<code>98</code>,<code>99</code>, or <code>9999-99-99</code>) for <code>NA</code>. Below, the <strong>bolded items</strong> are the attributes that <strong>remain</strong> in the report for analysis after cleaning, as the others either have a lot of <code>NA's</code> or <code>2's</code> (no). I will tidy the data in <code>Section 0.2</code> and begin analysis in <code>Section 1.0</code>.</p>
 <ol style="list-style-type: decimal">
 <li><p><code>id</code> - unique number for patients</p></li>
 <li><p><strong><code>sex</code></strong> - F/M (1/2)</p></li>
@@ -101,12 +102,11 @@
 <li><p><code>icu</code> - if patient was admitted to the ICU</p></li>
 <li><p><strong><code>covid_res</code></strong> - if patient has resistance - tested positive (1), negative (2), or is waiting for results (3)</p></li>
 </ol>
-<p>Again, I will only be analyzing the <strong>bolded attributes</strong> as the others either have a lot of <code>NA's</code> or <code>2's</code> (no). They don’t have sufficient information to be analyzed. The cleaned data can be found on my <a href="https://github.com/viggy-ravi/covid_outcome_predictions">github repository</a> repository. I will tidy the data in section <code>0.2</code> and begin analysis from section <code>1.0</code>.</p>
 <div id="imports" class="section level3">
 <h3>0.1 Imports</h3>
 <pre class="r"><code>library(tidyverse)
 
-# import dataset (locally - file too large to fit on github)
+# import dataset
 covid &lt;- read.csv(&quot;covid.csv&quot;)
 covid %&gt;% head(3)</code></pre>
 <pre><code>##       id sex patient_type entry_date date_symptoms  date_died intubed pneumonia
@@ -354,8 +354,8 @@ covid %&gt;% group_by(age_range) %&gt;% summarise(n = round(n()/nrow(covid),2))<
 <div id="analysis-of-variance" class="section level2">
 <h2>1.0 Analysis of Variance</h2>
 <p>The pandemic has disproportionately been affecting the elderly population, due to the physiological changes that come with aging and potential pre-existing health conditions (<a href="https://www.who.int/news-room/feature-stories/detail/who-delivers-advice-and-support-for-older-people-during-covid-19">ref</a>). I would like to explore if the rates of pre-existing conditions do vary among the different age groups (as a check to see how accurate the data holds to the information we’ve heard). This can be examined through a multivariate analysis of variance test or a MANOVA test. I will compare the mean rates of pre-existing conditions - <code>diabetes</code>, <code>hypertension</code>, <code>obesity</code> - among different age groups (<code>age_range</code>).</p>
-<p><span class="math inline">\(H_0:\)</span> For each response variable, the means of all groups are equal (<span class="math inline">\(\mu_1 = \mu_2 = \ldots = \mu_m\)</span>).</p>
-<p><span class="math inline">\(H_A:\)</span> For at least one response variable, at least one group mean differs (<span class="math inline">\(\mu_i \ne \mu_{i&#39;}\)</span>).</p>
+<p>H0: For each response variable, the means of all groups are equal (<span class="math inline">\(\mu_1 = \mu_2 = \ldots = \mu_m\)</span>).</p>
+<p>HA: For at least one response variable, at least one group mean differs (<span class="math inline">\(\mu_i \ne \mu_{i&#39;}\)</span>).</p>
 <pre class="r"><code># MANOVA (1)
 man &lt;- manova(cbind(diabetes, hypertension, obesity)~age_range, data=covid)
 
@@ -435,7 +435,7 @@ pairwise.t.test(covid$diabetes,    covid$age_range, p.adj=&quot;none&quot;)</cod
 ## 65-74 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 &lt; 2e-16 5.6e-06 &lt; 2e-16
 ## 
 ## P value adjustment method: none</code></pre>
-<p>From the one-way ANOVA tests and the individual t-tests, we see that most relations have differences in rates of pre-existing conditions between the various age groups (p &lt; 0.05). However, it was interesting to see that the rates of diabetes between the age groups <code>&lt;18</code> and <code>18-29</code> are closer together than for other groups (p = 0.005); also the rates of obesity between the age group <code>40-49</code> are closer to the age groups <code>50-64</code> and <code>65-74</code> (p=1.9e-9 and p=5.6e-6 respectively), but they are still statistically different.</p>
+<p>From the one-way ANOVA tests and the individual t-tests, we see that most relations have differences in rates of pre-existing conditions between the various age groups (p &lt; 0.05). However, it was interesting to see that the rates of diabetes between the age groups <code>&lt;18</code> and <code>18-29</code> are closer together than for other groups (p = 0.005).</p>
 <p>That being said, since there were a lot of tests performed, we need to correct the p-value using the Bonferroni adjusted significance.</p>
 <pre class="r"><code># n tests (1 MANOVA, 3 ANOVA, 63 t-tests)
 X &lt;- 1 + 3 + (3*21)
@@ -489,8 +489,8 @@ rnd_data %&gt;% group_by(sex) %&gt;%
 <div id="randomized-test" class="section level3">
 <h3>2.2 Randomized Test</h3>
 <p>For the randomization test, I will shuffle the <code>sex</code> label and calculate the mean differences of obesity rates between the two groups.</p>
-<p><span class="math inline">\(H_0:\)</span> The average obesity rates among the two groups are equal.</p>
-<p><span class="math inline">\(H_A:\)</span> The average obesity rates among the two groups are not equal</p>
+<p>H0: The average obesity rates among the two groups are equal.</p>
+<p>HA: The average obesity rates among the two groups are not equal</p>
 <pre class="r"><code># reduce dataset to important features
 rnd_data &lt;- rnd_data %&gt;% select(sex, obesity)
 
@@ -498,14 +498,12 @@ rnd_data &lt;- rnd_data %&gt;% select(sex, obesity)
 set.seed(813)
 
 rand_dist &lt;- vector()
-# there is a lot of data, so I will only do 100 samples
-# though, I get the same results for 100 and 5000 samples
 for(i in 1:100){
   # sample sex
   perm &lt;- data.frame(obesity=rnd_data$obesity,
                      sex=sample(rnd_data$sex))
   
-  # mean difference
+  # mean difference (F - M)
   rand_dist[i] &lt;- mean(perm[perm$sex==&quot;F&quot;,]$obesity) - 
                   mean(perm[perm$sex==&quot;M&quot;,]$obesity)
 }
@@ -517,8 +515,8 @@ orig_diff &lt;- rnd_data %&gt;% group_by(sex) %&gt;%
 round(orig_diff, 3)</code></pre>
 <pre><code>## [1] -0.055</code></pre>
 <pre class="r"><code># p-value
-mean(rand_dist &gt; orig_diff | rand_dist &lt; -orig_diff)</code></pre>
-<pre><code>## [1] 1</code></pre>
+mean(rand_dist &lt; orig_diff | rand_dist &gt; -orig_diff)</code></pre>
+<pre><code>## [1] 0</code></pre>
 </div>
 <div id="null-distribution" class="section level3">
 <h3>2.3 Null Distribution</h3>
@@ -574,9 +572,9 @@ summary(lm_fit)</code></pre>
 <h3>3.2 Regression Plot</h3>
 <pre class="r"><code>library(gridExtra)
 
-# only plot 25% of data points (to reduce execution time)
+# only plot 10% of data points (to reduce execution time)
 set.seed(813)
-plot_df &lt;- sample_n(covid, 0.25*nrow(covid)) %&gt;% 
+plot_df &lt;- sample_n(covid, 0.10*nrow(covid)) %&gt;% 
   select(sex, diabetes, hypertension, obesity, hospitalized)
 
 # plot regressions
@@ -904,7 +902,7 @@ summarize_all(diags,mean)</code></pre>
 ## [61] knitr_1.33        utf8_1.2.1        shape_1.4.5       stringi_1.5.3    
 ## [65] Rcpp_1.0.5        vctrs_0.3.8       dbplyr_2.1.1      tidyselect_1.1.1 
 ## [69] xfun_0.22</code></pre>
-<pre><code>## [1] &quot;2021-05-10 02:44:04 CDT&quot;</code></pre>
+<pre><code>## [1] &quot;2021-05-17 15:23:08 CDT&quot;</code></pre>
 <pre><code>##        sysname        release        version       nodename        machine 
 ##      &quot;Windows&quot;       &quot;10 x64&quot;  &quot;build 19041&quot;        &quot;VIGGY&quot;          &quot;x86&quot; 
 ##          login           user effective_user 

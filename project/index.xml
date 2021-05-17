@@ -13,7 +13,7 @@
       <pubDate>Fri, 07 May 2021 00:00:00 +0000</pubDate>
       
       <guid>/project/project2/</guid>
-      <description>0.0 IntroductionFor this report I will be looking into COVID-19 patient pre-condition dataset provided by the Mexican government (originally found on this kaggle challenge). The dataset contains information on 566,602 patients for 23 different attributes. Before you get into the data, just know that the bolded items are the attributes that remain in my dataset for analysis after cleaning. Also, the original dataset uses 1&#39;s for yes, 2&#39;s for no, and (97,98,99, or 9999-99-99) for NA.</description>
+      <description>0.0 IntroductionA health crisis of massive proportion such as the current COVID-19 pandemic has provided us ample opportunity to reflect on our healthcare system and how we can strengthen it. As we heard at the beginning of the pandemic, healthcare officials want to ‘flatten the curve’ to ensure sufficient supplies will be available to patients, thus minimizing casualties. For this report, I will look into data provided from COVID-19 patients, provided by the Mexican government (link), to build a model to predict hospitalization rates and hopefully provide insight on where to best allocate resources.</description>
     </item>
     
     <item>
